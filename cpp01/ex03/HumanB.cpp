@@ -15,6 +15,7 @@
 HumanB::HumanB( std::string name )
 {
 	this->name = name;
+	this->weapon = NULL;
 	if (DEBUG)
 		std::cout << "Human " << name << "was spawned" << std::endl;
 }
@@ -27,13 +28,16 @@ HumanB::~HumanB( void )
 
 void	HumanB::attack( void )
 {
-	std::cout << name << " attacks with their " << this->weapon.getType() << std::endl;
+	if (weapon)
+		std::cout << name << " attacks with their " << weapon->getType() << std::endl;
+	else
+		std::cout << name << " cannot attack without a weapon" << std::endl;
 }
 
 void	HumanB::setWeapon( Weapon& weapon )
 {
 	if (DEBUG)
 		std::cout << name << " picks up " << weapon.getType() << std::endl;
-	this->weapon = weapon;
+	this->weapon = &weapon;
 }
 

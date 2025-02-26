@@ -15,7 +15,7 @@
 HumanA::HumanA( std::string name, Weapon& weapon )
 {
 	this->name = name;
-	this->weapon = weapon;
+	this->weapon = &weapon;
 	if (DEBUG)
 		std::cout << "Human " << name << "was spawned" << std::endl;
 }
@@ -28,12 +28,15 @@ HumanA::~HumanA( void )
 
 void	HumanA::attack( void )
 {
-	std::cout << name << " attacks with their " << this->weapon.getType() << std::endl;
+	if (weapon)
+		std::cout << name << " attacks with their " << weapon->getType() << std::endl;
+	else
+		std::cout << name << " cannot attack without a weapon" << std::endl;
 }
 
 void	HumanA::setWeapon( Weapon& weapon )
 {
 	if (DEBUG)
-		std::cout << name << " picks up " << this->weapon.getType() << std::endl;
-	this->weapon = weapon;
+		std::cout << name << " picks up " << weapon.getType() << std::endl;
+	this->weapon = &weapon;
 }
