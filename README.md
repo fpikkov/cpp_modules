@@ -16,7 +16,8 @@ Up until this point all our projects have been written in C with multiple constr
 1. Following the previous exercise, create a funtion which will allocate N amount of classes.
 2. Introduction to references and comparing their use to variables and pointers.
 3. Create three classes, HumanA will take in the Weapon class in it's constructor whereas HumanB may be instantiated without said class. Changing the Weapon class should reflect the same changes in the Human classes.
-4. 
+4. Create a program which will take an infile, string to replace and the replaced string. Introduction to file streams.
+5. 
 
 ## LICENSE
 
