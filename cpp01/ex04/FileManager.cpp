@@ -41,17 +41,28 @@ e_errors	FileManager::checkError( void )
  */
 void	FileManager::process( void )
 {
-	if (!infile || !outfile || source.empty() || target.empty())
-		return ;
-	for (std::string buffer; std::getline(infile, buffer); )
+	std::string	buffer;
+	size_t		found;
+
+	if (!infile || !outfile || source.empty())
+		return (setError(MISSING_ARGS));
+	do
 	{
-		for (size_t found = buffer.find(source); found != std::string::npos; )
+		std::getline(infile, buffer);
+		if (!infile.eof() && !infile.fail())
+			buffer.append("\n");
+		do
 		{
+			found = buffer.find(source);
+			if (found == std::string::npos)
+				break ;
 			buffer = buffer.substr(0, found) + target + buffer.substr(found + source.length());
 			found += target.length();
 		}
+		while (found != std::string::npos);
 		outfile << buffer;
 	}
+	while (!infile.eof());
 }
 
 void	FileManager::open( void )
@@ -61,16 +72,10 @@ void	FileManager::open( void )
 	if (DEBUG)
 		std::cout << "Opening files" << std::endl;
 	if (filename.empty())
-	{
-		error = OPEN_FAILURE;
-		return ;
-	}
+		return (setError(OPEN_FAILURE));
 	infile.open(filename.c_str());
 	if (!infile)
-	{
-		error = OPEN_FAILURE;
-		return ;
-	}
+		return (setError(OPEN_FAILURE));
 	pos = filename.find('.');
 	if (pos != std::string::npos)
 		filename = filename.substr(0, pos);
@@ -79,7 +84,7 @@ void	FileManager::open( void )
 	if (!outfile)
 	{
 		infile.close();
-		error = OPEN_FAILURE;
+		return (setError(OPEN_FAILURE));
 	}
 }
 
@@ -93,18 +98,23 @@ void	FileManager::close( void )
 		outfile.close();
 }
 
+void	FileManager::setError(e_errors value)
+{
+	this->error = value;
+}
+
 int	ft_error(e_errors error)
 {
 	switch (error)
 	{
 		case MISSING_ARGS:
 			std::cerr << "Arguments required: <filename> <string_to_replace> <target_string>" << std::endl;
-			break;
+			break ;
 		case OPEN_FAILURE:
 			std::cerr << "Failed to open the given file" << std::endl;
-			break;
+			break ;
 		default:
-			break;
+			break ;
 	}
 	return (0);
 }

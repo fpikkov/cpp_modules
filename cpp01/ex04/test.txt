@@ -1,0 +1,11 @@
+This is a test file,
+which will demonstrate how to test
+the subject of the test exercise. The te
+st will be concluded now.
+
+Sike, now for real.
+
+
+Just one more test.
+
+The end (of test).

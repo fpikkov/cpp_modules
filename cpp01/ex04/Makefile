@@ -6,7 +6,7 @@ CLEAR = \033[0m
 
 CXX = g++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
-DBGFLAGS = -DDEBUG=1
+DBGFLAGS = -g -DDEBUG=1
 INC_FLAGS = -I {INCLUDES}
 
 NAME = haystack

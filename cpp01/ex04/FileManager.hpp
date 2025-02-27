@@ -18,10 +18,6 @@
 #  define DEBUG 0
 # endif
 
-# ifndef STREAM_SIZE
-#  define STREAM_SIZE 512
-# endif
-
 # include <iostream>
 # include <fstream>
 
@@ -42,6 +38,7 @@ class FileManager
 		std::string		source;
 		std::string		target;
 
+		void		setError(e_errors value);
 	public:
 		FileManager( char* file, char* s1, char* s2 );
 		~FileManager( void );

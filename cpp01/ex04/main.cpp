@@ -23,6 +23,8 @@ int	main(int argc, char **argv)
 	if (handler.checkError())
 		return (ft_error(handler.checkError()));
 	handler.process();
+	if (handler.checkError())
+		return (ft_error(handler.checkError()));
 	handler.close();
 
 	return (0);
