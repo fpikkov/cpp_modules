@@ -8,7 +8,7 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 INC_FLAGS = -I {INCLUDES}
 
-NAME = harl
+NAME = harlFilter
 
 BUILD = ${NAME}
 

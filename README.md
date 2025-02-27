@@ -18,7 +18,7 @@ Up until this point all our projects have been written in C with multiple constr
 3. Create three classes, HumanA will take in the Weapon class in it's constructor whereas HumanB may be instantiated without said class. Changing the Weapon class should reflect the same changes in the Human classes.
 4. Create a program which will take an infile, string to replace and the replaced string. Introduction to file streams.
 5. Practice the use of pointers to member functions and avoid using if/else if/else statements.
-6.
+6. Practice fall-through cases in switch statements.
 
 ## LICENSE
 
