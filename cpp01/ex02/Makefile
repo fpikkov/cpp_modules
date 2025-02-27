@@ -13,7 +13,7 @@ BUILD = ${NAME}
 
 SRCS = main.cpp
 
-OBJS = ${patsubst ${SRC_DIR}/%.c,${OBJ_DIR}/%.o,${SRCS}}
+OBJS = ${SRCS:.cpp=.o}
 
 # --------	MAKE TARGETS	--------
 all: ${BUILD}
@@ -23,9 +23,9 @@ ${BUILD}: ${OBJS}
 	@${CXX} ${CXXFLAGS} -o $@ $^
 	@echo "${GREEN}Executable ${CYAN}"${NAME}"${GREEN} was created${CLEAR}"
 
-${OBJ_DIR}/%.o : ${SRC_DIR}/%.c
+${OBJS}: %.o : %.cpp
 	@echo "${CYAN}Generating object files...${CLEAR}"
-	@$(CXX) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -c $<
 
 clean:
 	@echo "${RED}Cleaning object files...${CLEAR}"

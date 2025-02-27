@@ -9,14 +9,14 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 DBGFLAGS = -DDEBUG=1
 INC_FLAGS = -I {INCLUDES}
 
-NAME = sed
+NAME = haystack
 
 BUILD = ${NAME}
 
-INCLUDES = replace.hpp
-SRCS = main.cpp
+INCLUDES = FileManager.hpp
+SRCS = main.cpp FileManager.cpp
 
-OBJS = ${patsubst ${SRC_DIR}/%.c,${OBJ_DIR}/%.o,${SRCS}}
+OBJS = ${SRCS:.cpp=.o}
 
 # --------	MAKE TARGETS	--------
 all: ${BUILD}
@@ -26,9 +26,9 @@ ${BUILD}: ${OBJS}
 	@${CXX} ${CXXFLAGS} -o $@ $^
 	@echo "${GREEN}Executable ${CYAN}"${NAME}"${GREEN} was created${CLEAR}"
 
-${OBJ_DIR}/%.o : ${SRC_DIR}/%.c
+${OBJS}: %.o : %.cpp
 	@echo "${CYAN}Generating object files...${CLEAR}"
-	@$(CXX) $(CXXFLAGS) -c $< -o $@ ${INC_FLAGS}
+	@$(CXX) $(CXXFLAGS) -c $< ${INC_FLAGS}
 
 clean:
 	@echo "${RED}Cleaning object files...${CLEAR}"

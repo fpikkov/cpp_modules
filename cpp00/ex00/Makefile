@@ -13,7 +13,7 @@ BUILD = ${NAME}
 
 SRCS =	megaphone.cpp
 
-OBJS = ${patsubst ${SRC_DIR}/%.c,${OBJ_DIR}/%.o,${SRCS}}
+OBJS = ${SRCS:.cpp=.o}
 
 # --------	MAKE TARGETS	--------
 all: ${BUILD}
@@ -22,9 +22,9 @@ ${BUILD}: ${OBJS}
 	@echo "${GREEN}Generating build...${CLEAR}"
 	${CXX} ${CXXFLAGS} -o $@ $^
 
-${OBJ_DIR}/%.o : ${SRC_DIR}/%.c
+${OBJS}: %.o : %.cpp
 	@echo "${CYAN}Generating object files...${CLEAR}"
-	@$(CXX) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -c $<
 
 clean:
 	@echo "${RED}Cleaning object files...${CLEAR}"

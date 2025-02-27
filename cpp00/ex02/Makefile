@@ -15,18 +15,19 @@ BUILD = ${NAME}
 INCLUDES = Account.hpp
 SRCS = Account.cpp tests.cpp
 
-OBJS = ${patsubst ${SRC_DIR}/%.c,${OBJ_DIR}/%.o,${SRCS}}
+OBJS = ${SRCS:.cpp=.o}
 
 # --------	MAKE TARGETS	--------
 all: ${BUILD}
 
 ${BUILD}: ${OBJS}
 	@echo "${GREEN}Generating build...${CLEAR}"
-	${CXX} ${CXXFLAGS} -o $@ $^
+	@${CXX} ${CXXFLAGS} -o $@ $^
+	@echo "${GREEN}Executable ${CYAN}"${NAME}"${GREEN} was created${CLEAR}"
 
-${OBJ_DIR}/%.o : ${SRC_DIR}/%.c
+${OBJS}: %.o : %.cpp
 	@echo "${CYAN}Generating object files...${CLEAR}"
-	@$(CXX) $(CXXFLAGS) -c $< -o $@ ${INC_FLAGS}
+	@$(CXX) $(CXXFLAGS) -c $< ${INC_FLAGS}
 
 clean:
 	@echo "${RED}Cleaning object files...${CLEAR}"

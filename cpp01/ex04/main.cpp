@@ -10,45 +10,20 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <fstream>
-#include "replace.hpp"
-
-int	ft_error(e_errors error)
-{
-	switch (error)
-	{
-		case MISSING_ARGS:
-			std::cerr << "Arguments required: <filename> <string_to_replace> <target_string>" << std::endl;
-			break;
-		case OPEN_FAILURE:
-			std::cerr << "Failed to open the given file" << std::endl;
-			break;
-		default:
-			break;
-	}
-	return (0);
-}
+#include "FileManager.hpp"
 
 int	main(int argc, char **argv)
 {
-	std::ifstream	infile;
-	std::ofstream	outfile;
-	std::string		filename;
-	std::string		buffer;
-	std::string		s1;
-	std::string		s2;
-
 	if (argc < 4)
 		return (ft_error(MISSING_ARGS));
 
-	filename = argv[1];
-	s1 = argv[2];
-	s2 = argv[3];
+	FileManager	handler(argv[1], argv[2], argv[3]);
 
-	infile.open(filename);
-	if (!infile)
-		return (ft_error(OPEN_FAILURE));
+	handler.open();
+	if (handler.checkError())
+		return (ft_error(handler.checkError()));
+	handler.process();
+	handler.close();
 
 	return (0);
 }
