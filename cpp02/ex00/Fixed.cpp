@@ -21,29 +21,35 @@ Fixed::Fixed( void )
 Fixed::Fixed(const Fixed& other )
 {
 	PRINT("Copy constructor called");
-	// copy
+	*this = other;
 }
 
 Fixed& Fixed::operator=(const Fixed& other)
 {
 	PRINT("Copy assignment operator called");
-	// assignment
+	this->number = other.getRawBits();
+	return (*this);
 }
 
 Fixed::~Fixed( void )
 {
 	PRINT("Destructor called");
-	// destructor
 }
 
+/**
+ * @brief Returns the raw value of the fixed-point value
+ */
 int		Fixed::getRawBits( void ) const
 {
 	PRINT("getRawBits member function called");
-	// returns the raw value of the fixed-point value
+	return (number >> fractional_bits);
 }
 
+/**
+ * @brief Sets the raw value of the fixed-point number
+ */
 void	Fixed::setRawBits( int const raw)
 {
 	PRINT("setRawBits member function called");
-	// sets the raw value of the fixed-point number
+	number = raw << fractional_bits;
 }
