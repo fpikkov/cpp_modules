@@ -21,8 +21,8 @@
 class Fixed
 {
 	private:
-		int					number;
-		static const int	fractional_bits = 8;
+		int					raw;
+		static const int	bits = 8;
 
 	public:
 		Fixed( void );

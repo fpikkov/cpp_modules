@@ -15,17 +15,19 @@
 Fixed::Fixed( void )
 {
 	PRINT("Default constructor called");
-	number = 0;
+	raw = 0;
 }
 
 Fixed::Fixed( const int value )
 {
-	// Accepts integer
+	PRINT("Int constructor called");
+	raw = static_cast<int>(value * (1 << bits));
 }
 
 Fixed::Fixed( const float value )
 {
-	// Accepts float
+	PRINT("Float constructor called");
+	raw = static_cast<int>(roundf(value * (1 << bits)));
 }
 
 Fixed::Fixed(const Fixed& other )
@@ -37,7 +39,7 @@ Fixed::Fixed(const Fixed& other )
 Fixed& Fixed::operator=(const Fixed& other)
 {
 	PRINT("Copy assignment operator called");
-	this->number = other.getRawBits();
+	this->raw = other.getRawBits();
 	return (*this);
 }
 
@@ -51,8 +53,7 @@ Fixed::~Fixed( void )
  */
 int		Fixed::getRawBits( void ) const
 {
-	PRINT("getRawBits member function called");
-	return (number >> fractional_bits);
+	return (raw);
 }
 
 /**
@@ -60,22 +61,27 @@ int		Fixed::getRawBits( void ) const
  */
 void	Fixed::setRawBits( int const raw)
 {
-	PRINT("setRawBits member function called");
-	number = raw << fractional_bits;
+	this->raw = raw;
 }
 
+/**
+ * @brief Converts raw value to float based on fractional bits
+ */
 float	Fixed::toFloat( void ) const
 {
-	// Converts to float
+	return (static_cast<float>(getRawBits()) / (1 << bits));
 }
 
+/**
+ * @brief Converts raw value to int based on fractional bits
+ */
 int		Fixed::toInt( void ) const
 {
-	// Convert to int
+	return (static_cast<int>(getRawBits() / (1 << bits)));
 }
 
 std::ostream& operator<<( std::ostream& os, const Fixed& obj)
 {
-	os << obj.getRawBits();
+	os << obj.toFloat();
 	return (os);
 }
