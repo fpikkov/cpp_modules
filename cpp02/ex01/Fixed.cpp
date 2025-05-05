@@ -77,7 +77,7 @@ float	Fixed::toFloat( void ) const
  */
 int		Fixed::toInt( void ) const
 {
-	return (static_cast<int>(getRawBits() / (1 << bits)));
+	return (getRawBits() >> bits);
 }
 
 std::ostream& operator<<( std::ostream& os, const Fixed& obj)
