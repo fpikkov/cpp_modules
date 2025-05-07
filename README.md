@@ -20,6 +20,12 @@ Up until this point all our projects have been written in C with multiple constr
 5. Practice the use of pointers to member functions and avoid using if/else if/else statements.
 6. Practice fall-through cases in switch statements.
 
+### CPP02
+0. Start impplementing classes in the Orthodox Canonical Form. Simple setup for a class which will handle fixed point numbers.
+1. Implement more member functions and add an overload of the insertion operator.
+2. Implement comparison, arithmetic and increment/decrement operator overloads. Add member functions which will return the minimum or maximum fixed point number between two parameters.
+3. Using the fixed point number class, implement a class for storing x and y coordinates. Then use said class in a function to check whether a point is inside of a triangle constructed from vertices A, B and C.
+
 ## LICENSE
 
 This repository is licensed under GNU GPL v3.0.
