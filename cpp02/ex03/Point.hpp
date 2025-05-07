@@ -23,10 +23,15 @@ class Point
 
 	public:
 		Point( void );
-		Point( const Fixed x, const Fixed y);
-		Point(const Point& other);
+		Point( const float x, const float y);
+		Point( const int x, const int y);
+		Point( const Point& other );
 		Point&	operator=(const Point& other);
 		~Point( void );
-}
+
+		Fixed	crossProduct(Point const other, Point const point) const;
+};
+
+bool	bsp(Point const a, Point const b, Point const c, Point const point);
 
 #endif
