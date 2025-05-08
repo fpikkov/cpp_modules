@@ -42,6 +42,7 @@ Fixed& Fixed::operator=(const Fixed& other)
 
 Fixed::~Fixed( void )
 {
+
 }
 
 // Getter and setter methods
