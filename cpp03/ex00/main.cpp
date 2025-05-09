@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+# include <limits>
 #include "ClapTrap.hpp"
 
 int	main(void)
@@ -30,7 +31,7 @@ int	main(void)
 	clap.attack(bot);
 	clap.attack(bot);
 	clap.takeDamage(12);
-	clap.takeDamage(12);
+	clap.takeDamage(__UINT32_MAX__);
 	clap.beRepaired(10);
 	clap.takeDamage(12);
 
