@@ -56,6 +56,23 @@ ScavTrap::~ScavTrap( void )
 	PRINT("ScavTrap destructor called");
 }
 
+void	ScavTrap::attack( const std::string& target)
+{
+	if (getHitPoints() == 0)
+	{
+		PRINT( getName() << " is dead");
+		return ;
+	}
+	if (getEnergyPoints() == 0)
+	{
+		PRINT( getName() << " is too tired to fight");
+		return ;
+	}
+
+	PRINT( "Guardian " << getName() << " slaps " << target << " and does " << getAttackDamage() << " points of damage!");
+	setEnergyPoints(getEnergyPoints() - 1);
+}
+
 void	ScavTrap::guardGate( void )
 {
 	if (getEnergyPoints() == 0)
