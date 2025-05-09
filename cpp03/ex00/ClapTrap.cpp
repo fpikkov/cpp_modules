@@ -103,4 +103,6 @@ void	ClapTrap::beRepaired( unsigned int amount )
 	}
 
 	PRINT( _name << " repairs itself for " << amount << " hitpoints.");
+	_hitPoints += amount;
+	--_energyPoints;
 }

@@ -15,8 +15,24 @@
 int	main(void)
 {
 	ClapTrap	clap;
+	std::string	bot = "Charlie";
 
-	clap.attack("Yvonka");
+	clap.attack(bot);
+	clap.takeDamage(9);
+	clap.beRepaired(9);
+	clap.beRepaired(10);
+	clap.beRepaired(10);
+	clap.attack(bot);
+	clap.attack(bot);
+	clap.attack(bot);
+	clap.attack(bot);
+	clap.attack(bot);
+	clap.attack(bot);
+	clap.attack(bot);
+	clap.takeDamage(12);
+	clap.takeDamage(12);
+	clap.beRepaired(10);
+	clap.takeDamage(12);
 
 	return (0);
 }
