@@ -6,13 +6,14 @@
 /*   By: fpikkov <fpikkov@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:16:24 by fpikkov           #+#    #+#             */
-/*   Updated: 2025/05/09 16:16:26 by fpikkov          ###   ########.fr       */
+/*   Updated: 2025/05/13 10:36:21 by fpikkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "FragTrap.hpp"
+#include <cstdlib>
 
-#define FIVES_MAX 5
+#define FIVES_MAX 4
 
 static std::string g_fives[FIVES_MAX] = {
 	" hands out high fives like it's Christmas.",
@@ -62,8 +63,13 @@ FragTrap::~FragTrap( void )
 
 void	FragTrap::highFivesGuys(void)
 {
-	static int	counter = 0;
+	static bool	randomized = false;
 
+	if (randomized == false)
+	{
+		std::srand(time(0));
+		randomized = true;
+	}
 	if (getHitPoints() == 0)
 	{
 		PRINT( getName() << " has been disconnected.");
@@ -74,9 +80,6 @@ void	FragTrap::highFivesGuys(void)
 		PRINT( getName() << " is too tired to hand out high fives.");
 		return ;
 	}
-	PRINT( getName() << g_fives[counter]);
-	counter++;
-	if (counter == FIVES_MAX - 1)
-		counter = 0;
+	PRINT( getName() << g_fives[std::rand() % FIVES_MAX]);
 	setEnergyPoints(getEnergyPoints() - 1);
 }
