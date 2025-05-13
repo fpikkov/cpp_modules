@@ -21,10 +21,16 @@ Up until this point all our projects have been written in C with multiple constr
 6. Practice fall-through cases in switch statements.
 
 ### CPP02
-0. Start impplementing classes in the Orthodox Canonical Form. Simple setup for a class which will handle fixed point numbers.
+0. Start implementing classes in the Orthodox Canonical Form. Simple setup for a class which will handle fixed point numbers.
 1. Implement more member functions and add an overload of the insertion operator.
 2. Implement comparison, arithmetic and increment/decrement operator overloads. Add member functions which will return the minimum or maximum fixed point number between two parameters.
 3. Using the fixed point number class, implement a class for storing x and y coordinates. Then use said class in a function to check whether a point is inside of a triangle constructed from vertices A, B and C.
+
+### CPP03
+0. Begin this module by implementing a base class which will later be used to create derived classes.
+1. Create a derived class which will inherit the members of the base class. The derived class will override the ClapTrap::attack method and use different values to initialize member variables of the base class. One new method is included in the derived class.
+2. Similarly to the previous exercise, create a derived class from the base class and initialize values unique to the new derived class. An additional method is included.
+3. Diamond inheritance problem: create a class which inherits from both the previous derived classes. Variables are initialized based on a combination of the derived classes initial values. Example of variable shadowing.
 
 ## LICENSE
 
