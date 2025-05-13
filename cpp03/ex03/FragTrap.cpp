@@ -6,7 +6,7 @@
 /*   By: fpikkov <fpikkov@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:16:24 by fpikkov           #+#    #+#             */
-/*   Updated: 2025/05/13 14:56:38 by fpikkov          ###   ########.fr       */
+/*   Updated: 2025/05/13 15:18:56 by fpikkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,18 @@ FragTrap::FragTrap( void ) : ClapTrap()
 {
 	PRINT(GREEN << "Default FragTrap constructor called" << CLEAR);
 
-	setHitPoints(100);
-	setEnergyPoints(100);
-	setAttackDamage(30);
+	setHitPoints(FRAG_HP_EP);
+	setEnergyPoints(FRAG_HP_EP);
+	setAttackDamage(FRAG_AD);
 }
 
 FragTrap::FragTrap( std::string name ) : ClapTrap(name)
 {
 	PRINT(GREEN << "FragTrap constructor called" << CLEAR);
 
-	setHitPoints(100);
-	setEnergyPoints(100);
-	setAttackDamage(30);
+	setHitPoints(FRAG_HP_EP);
+	setEnergyPoints(FRAG_HP_EP);
+	setAttackDamage(FRAG_AD);
 }
 
 FragTrap::FragTrap( const FragTrap& other ) : ClapTrap(other)
@@ -82,4 +82,19 @@ void	FragTrap::highFivesGuys(void)
 	}
 	PRINT( getName() << g_fives[std::rand() % (FIVES_MAX - 1)]);
 	setEnergyPoints(getEnergyPoints() - 1);
+}
+
+void	FragTrap::defaultHitPoints( void )
+{
+	setHitPoints(FRAG_HP_EP);
+}
+
+void	FragTrap::defaultEnergyPoints( void )
+{
+	setEnergyPoints(FRAG_HP_EP);
+}
+
+void	FragTrap::defaultAttackDamage( void )
+{
+	setAttackDamage(FRAG_AD);
 }

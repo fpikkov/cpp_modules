@@ -6,15 +6,17 @@
 /*   By: fpikkov <fpikkov@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:24:39 by fpikkov           #+#    #+#             */
-/*   Updated: 2025/05/13 14:58:57 by fpikkov          ###   ########.fr       */
+/*   Updated: 2025/05/13 14:50:19 by fpikkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ClapTrap.hpp"
 
+// Constructors and destructors
+
 ClapTrap::ClapTrap( void )
 {
-	PRINT(GREEN << "Default constructor called" << CLEAR);
+	PRINT(GREEN << "Default ClapTrap constructor called" << CLEAR);
 
 	_name = "NULLtrap";
 	_hitPoints = 10;
@@ -24,7 +26,7 @@ ClapTrap::ClapTrap( void )
 
 ClapTrap::ClapTrap( std::string name )
 {
-	PRINT(GREEN << "Constructor called" << CLEAR);
+	PRINT(GREEN << "ClapTrap constructor called" << CLEAR);
 
 	_name = name;
 	_hitPoints = 10;
@@ -34,27 +36,73 @@ ClapTrap::ClapTrap( std::string name )
 
 ClapTrap::ClapTrap( const ClapTrap& other )
 {
-	PRINT(GREEN << "Copy constructor called" << CLEAR);
+	PRINT(GREEN << "ClapTrap copy constructor called" << CLEAR);
 
 	*this = other;
 }
 
 ClapTrap&	ClapTrap::operator=( const ClapTrap& other)
 {
-	PRINT(GREEN << "Copy assignment operator called" << CLEAR);
+	PRINT(GREEN << "ClapTrap copy assignment operator called" << CLEAR);
 
-	this->_name = other._name;
-	this->_hitPoints = other._hitPoints;
-	this->_energyPoints = other._energyPoints;
-	this->_attackDamage = other._attackDamage;
-
+	if (this != &other)
+	{
+		this->_name = other._name;
+		this->_hitPoints = other._hitPoints;
+		this->_energyPoints = other._energyPoints;
+		this->_attackDamage = other._attackDamage;
+	}
 	return (*this);
 }
 
 ClapTrap::~ClapTrap( void )
 {
-	PRINT(RED << "Destructor called" << CLEAR);
+	PRINT(RED << "ClapTrap destructor called" << CLEAR);
 }
+
+// Getters and setters
+
+std::string		ClapTrap::getName( void ) const
+{
+	return (_name);
+}
+
+unsigned int	ClapTrap::getHitPoints( void ) const
+{
+	return (_hitPoints);
+}
+
+unsigned int	ClapTrap::getEnergyPoints( void ) const
+{
+	return (_energyPoints);
+}
+
+unsigned int	ClapTrap::getAttackDamage( void ) const
+{
+	return (_attackDamage);
+}
+
+void	ClapTrap::setName( std::string name )
+{
+	_name = name;
+}
+
+void	ClapTrap::setHitPoints( unsigned int hitPoints )
+{
+	_hitPoints = hitPoints;
+}
+
+void	ClapTrap::setEnergyPoints( unsigned int energyPoints )
+{
+	_energyPoints = energyPoints;
+}
+
+void	ClapTrap::setAttackDamage( unsigned int attackDamage )
+{
+	_attackDamage = attackDamage;
+}
+
+// Public methods
 
 void	ClapTrap::attack( const std::string& target)
 {

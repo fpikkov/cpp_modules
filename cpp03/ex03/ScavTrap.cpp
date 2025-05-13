@@ -6,7 +6,7 @@
 /*   By: fpikkov <fpikkov@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:46:07 by fpikkov           #+#    #+#             */
-/*   Updated: 2025/05/13 14:56:42 by fpikkov          ###   ########.fr       */
+/*   Updated: 2025/05/13 15:28:00 by fpikkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ ScavTrap::ScavTrap( void ) : ClapTrap()
 	PRINT(GREEN << "Default ScavTrap constructor called" << CLEAR);
 
 	_guarding = false;
-	setHitPoints(100);
-	setEnergyPoints(50);
-	setAttackDamage(20);
+	setHitPoints(SCAV_HP);
+	setEnergyPoints(SCAV_EP);
+	setAttackDamage(SCAV_AD);
 }
 
 ScavTrap::ScavTrap( std::string name ) : ClapTrap( name )
@@ -27,19 +27,19 @@ ScavTrap::ScavTrap( std::string name ) : ClapTrap( name )
 	PRINT(GREEN << "ScavTrap constructor called" << CLEAR);
 
 	_guarding = false;
-	setHitPoints(100);
-	setEnergyPoints(50);
-	setAttackDamage(20);
+	setHitPoints(SCAV_HP);
+	setEnergyPoints(SCAV_EP);
+	setAttackDamage(SCAV_AD);
 }
 
-ScavTrap::ScavTrap( const ScavTrap& other ) : ClapTrap(other)
+ScavTrap::ScavTrap( const ScavTrap& other ) : ClapTrap( other )
 {
 	PRINT(GREEN << "ScavTrap copy constructor called" << CLEAR);
 
 	this->_guarding = other._guarding;
 }
 
-ScavTrap&	ScavTrap::operator=( const ScavTrap& other)
+ScavTrap&	ScavTrap::operator=( const ScavTrap& other )
 {
 	PRINT(GREEN << "ScavTrap copy assignment operator called" << CLEAR);
 
@@ -56,7 +56,7 @@ ScavTrap::~ScavTrap( void )
 	PRINT(RED << "ScavTrap destructor called" << CLEAR);
 }
 
-void	ScavTrap::attack( const std::string& target)
+void	ScavTrap::attack( const std::string& target )
 {
 	if (getHitPoints() == 0)
 	{
@@ -95,4 +95,19 @@ void	ScavTrap::guardGate( void )
 	}
 	_guarding = !_guarding;
 	setEnergyPoints(getEnergyPoints() - 1);
+}
+
+void	ScavTrap::defaultHitPoints( void )
+{
+	setHitPoints(SCAV_HP);
+}
+
+void	ScavTrap::defaultEnergyPoints( void )
+{
+	setEnergyPoints(SCAV_EP);
+}
+
+void	ScavTrap::defaultAttackDamage( void )
+{
+	setAttackDamage(SCAV_AD);
 }

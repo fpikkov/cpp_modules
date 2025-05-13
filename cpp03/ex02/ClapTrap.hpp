@@ -6,7 +6,7 @@
 /*   By: fpikkov <fpikkov@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:24:34 by fpikkov           #+#    #+#             */
-/*   Updated: 2025/05/08 15:24:36 by fpikkov          ###   ########.fr       */
+/*   Updated: 2025/05/13 14:53:57 by fpikkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,11 @@
 #ifndef CLAPTRAP_HPP
 # define CLAPTRAP_HPP
 # define PRINT(str) std::cout << str << std::endl;
+
+# define RED "\033[1;31m"
+# define GREEN "\033[1;32m"
+# define CYAN "\033[1;36m"
+# define CLEAR "\033[0m"
 
 # include <iostream>
 

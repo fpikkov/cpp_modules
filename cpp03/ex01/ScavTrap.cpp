@@ -6,7 +6,7 @@
 /*   By: fpikkov <fpikkov@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:46:07 by fpikkov           #+#    #+#             */
-/*   Updated: 2025/05/09 11:46:08 by fpikkov          ###   ########.fr       */
+/*   Updated: 2025/05/13 14:58:13 by fpikkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 ScavTrap::ScavTrap( void ) : ClapTrap()
 {
-	PRINT("Default ScavTrap constructor called");
+	PRINT(GREEN << "Default ScavTrap constructor called" << CLEAR);
 
 	_guarding = false;
 	setHitPoints(100);
@@ -24,7 +24,7 @@ ScavTrap::ScavTrap( void ) : ClapTrap()
 
 ScavTrap::ScavTrap( std::string name ) : ClapTrap( name )
 {
-	PRINT("ScavTrap constructor called");
+	PRINT(GREEN << "ScavTrap constructor called" << CLEAR);
 
 	_guarding = false;
 	setHitPoints(100);
@@ -34,14 +34,14 @@ ScavTrap::ScavTrap( std::string name ) : ClapTrap( name )
 
 ScavTrap::ScavTrap( const ScavTrap& other ) : ClapTrap(other)
 {
-	PRINT("ScavTrap copy constructor called");
+	PRINT(GREEN << "ScavTrap copy constructor called" << CLEAR);
 
 	this->_guarding = other._guarding;
 }
 
 ScavTrap&	ScavTrap::operator=( const ScavTrap& other)
 {
-	PRINT("ScavTrap copy assignment operator called");
+	PRINT(GREEN << "ScavTrap copy assignment operator called" << CLEAR);
 
 	if (this != &other)
 	{
@@ -53,7 +53,7 @@ ScavTrap&	ScavTrap::operator=( const ScavTrap& other)
 
 ScavTrap::~ScavTrap( void )
 {
-	PRINT("ScavTrap destructor called");
+	PRINT(RED << "ScavTrap destructor called" << CLEAR);
 }
 
 void	ScavTrap::attack( const std::string& target)

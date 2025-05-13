@@ -6,7 +6,7 @@
 /*   By: fpikkov <fpikkov@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:24:39 by fpikkov           #+#    #+#             */
-/*   Updated: 2025/05/08 15:24:40 by fpikkov          ###   ########.fr       */
+/*   Updated: 2025/05/13 14:57:36 by fpikkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 ClapTrap::ClapTrap( void )
 {
-	PRINT("Default ClapTrap constructor called");
+	PRINT(GREEN << "Default ClapTrap constructor called" << CLEAR);
 
 	_name = "NULLtrap";
 	_hitPoints = 10;
@@ -26,7 +26,7 @@ ClapTrap::ClapTrap( void )
 
 ClapTrap::ClapTrap( std::string name )
 {
-	PRINT("ClapTrap constructor called");
+	PRINT(GREEN << "ClapTrap constructor called" << CLEAR);
 
 	_name = name;
 	_hitPoints = 10;
@@ -36,14 +36,14 @@ ClapTrap::ClapTrap( std::string name )
 
 ClapTrap::ClapTrap( const ClapTrap& other )
 {
-	PRINT("ClapTrap copy constructor called");
+	PRINT(GREEN << "ClapTrap copy constructor called" << CLEAR);
 
 	*this = other;
 }
 
 ClapTrap&	ClapTrap::operator=( const ClapTrap& other)
 {
-	PRINT("ClapTrap copy assignment operator called");
+	PRINT(GREEN << "ClapTrap copy assignment operator called" << CLEAR);
 
 	if (this != &other)
 	{
@@ -57,7 +57,7 @@ ClapTrap&	ClapTrap::operator=( const ClapTrap& other)
 
 ClapTrap::~ClapTrap( void )
 {
-	PRINT("ClapTrap destructor called");
+	PRINT(RED << "ClapTrap destructor called" << CLEAR);
 }
 
 // Getters and setters
@@ -149,6 +149,8 @@ void	ClapTrap::beRepaired( unsigned int amount )
 		PRINT( _name << " is too tired to repair itself.");
 		return ;
 	}
+	if (amount > __UINT32_MAX__ - _hitPoints)
+		amount = __UINT32_MAX__ - _hitPoints;
 
 	PRINT( _name << " repairs itself for " << amount << " hitpoints.");
 	_hitPoints += amount;
