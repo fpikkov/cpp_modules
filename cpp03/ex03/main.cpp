@@ -6,7 +6,7 @@
 /*   By: fpikkov <fpikkov@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:24:45 by fpikkov           #+#    #+#             */
-/*   Updated: 2025/05/13 15:37:44 by fpikkov          ###   ########.fr       */
+/*   Updated: 2025/05/13 16:06:24 by fpikkov          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,14 @@ int	main(void)
 	clap.takeDamage(botty.getAttackDamage());
 	clap.beRepaired(botty.getAttackDamage());
 	clap.beRepaired(10);
+	clap.guardGate();
 	clap.beRepaired(__UINT32_MAX__);
 	clap.highFivesGuys();
 	clap.attack(botty.getName());
 	clap.attack(botty.getName());
 	clap.attack(botty.getName());
 	clap.attack(botty.getName());
+	clap.guardGate();
 	clap.attack(botty.getName());
 	clap.attack(botty.getName());
 	clap.attack(botty.getName());
