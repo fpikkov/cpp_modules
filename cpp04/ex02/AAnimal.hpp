@@ -22,6 +22,7 @@
 
 # include <iostream>
 
+// Technically a pure abstract class as it contains no concrete functions.
 class AAnimal
 {
 	protected:

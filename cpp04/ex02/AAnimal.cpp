@@ -39,8 +39,3 @@ AAnimal::~AAnimal( void )
 {
 	PRINT(RED << "AAnimal destructor called" << CLEAR);
 }
-
-void	AAnimal::makeSound( void ) const
-{
-	PRINT(CYAN << "**Random AAnimal noises**" << CLEAR);
-}
