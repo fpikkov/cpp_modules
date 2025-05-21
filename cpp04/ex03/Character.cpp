@@ -118,6 +118,31 @@ void	Character::equip( AMateria* m )
 
 	// Messaging in case inventory is full
 	std::cout << getName() << " can not equip additional items." << std::endl;
+
+	// Prevent double free in case the same resource has been stored previously
+	for (int i = 0; i < STORAGE_MAX; i++)
+	{
+		if (_storage[i] && _storage[i] == m)
+			return ;
+	}
+
+	// Memory safety (place the resource in storage)
+	for (int i = 0; i < STORAGE_MAX; i++)
+	{
+		if (!_storage[i])
+		{
+			_storage[i] = m;
+			return ;
+		}
+	}
+
+	// In case storage was full
+	char	buffer = 0;
+	std::cout << "Character storage is full, would you like to delete the resource? y/n" << std::endl;
+	std::cin.get(buffer);
+	if (buffer == 'y' || buffer == 'Y')
+		delete (m);
+
 }
 
 /**
@@ -159,6 +184,15 @@ void	Character::unequip( int idx )
 
 	// What are you still doing here?
 	std::cout << "The floor is full, could not unequip the requested item." << std::endl;
+
+	char	buffer = 0;
+	std::cout << "Would you like to clear the items on the floor and continue with unequipping? y/n" << std::endl;
+	std::cin.get(buffer);
+	if (buffer == 'y' || buffer == 'Y')
+	{
+		Character::clearStorage();
+		Character::unequip(idx);
+	}
 }
 
 /**

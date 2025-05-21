@@ -5,7 +5,7 @@ CYAN = \033[1;36m
 CLEAR = \033[0m
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 INC_FLAGS = -I {INCLUDES}
 
 NAME = interface
