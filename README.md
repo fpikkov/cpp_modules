@@ -32,6 +32,12 @@ Up until this point all our projects have been written in C with multiple constr
 2. Similarly to the previous exercise, create a derived class from the base class and initialize values unique to the new derived class. An additional method is included.
 3. Diamond inheritance problem: create a class which inherits from both the previous derived classes. Variables are initialized based on a combination of the derived classes initial values. Example of variable shadowing.
 
+### CPP04
+0. Introduction to polymorphic classes. Demonstration of member function overloads.
+1. Use heap allocated memory to store variables within classes. Make sure to create deep copies of the allocated variables instead of shallow copies.
+2. Introduction to the concept of abstract classes which cannot be instantiated on their own.
+3. Implement multiple pure abstract classes (commonly called interfaces), an abstract class and concrete classes. Multiple classes will include pointers to heap allocated objects which will require proper cleanup using the delete keyword.
+
 ## LICENSE
 
 This repository is licensed under GNU GPL v3.0.
