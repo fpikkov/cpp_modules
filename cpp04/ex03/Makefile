@@ -5,15 +5,15 @@ CYAN = \033[1;36m
 CLEAR = \033[0m
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g
 INC_FLAGS = -I {INCLUDES}
 
 NAME = interface
 
 BUILD = ${NAME}
 
-INCLUDES = AMateria.hpp Ice.hpp Cure.hpp ICharacter.hpp IMateriaSource.hpp MateriaSource.hpp
-SRCS = main.cpp AMateria.cpp Ice.cpp Cure.cpp MateriaSource.cpp
+INCLUDES = AMateria.hpp Ice.hpp Cure.hpp ICharacter.hpp IMateriaSource.hpp MateriaSource.hpp Character.hpp
+SRCS = main.cpp AMateria.cpp Ice.cpp Cure.cpp MateriaSource.cpp Character.cpp
 
 OBJS = ${SRCS:.cpp=.o}
 

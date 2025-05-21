@@ -14,8 +14,10 @@
 #ifndef AMATERIA_HPP
 # define AMATERIA_HPP
 
-# include "ICharacter.hpp"
 # include <iostream>
+
+// Forward declaration to avoid circular dependency
+class ICharacter;
 
 class AMateria
 {

@@ -55,6 +55,15 @@ MateriaSource::~MateriaSource( void )
 	}
 }
 
+/**
+ * Subject quotes: Copies the Materia passed as a parameter and store it in memory so it can be cloned later.
+ * The main provided:
+ * 		IMateriaSource* src = new MateriaSource();
+ * 		src->learnMateria(new Ice());
+ * 		src->learnMateria(new Cure());
+ *
+ * The two are contradicting as "copying" (creating clones) would lead to a memory leak with the provided main.
+ */
 void	MateriaSource::learnMateria( AMateria* m )
 {
 	if (!m)
@@ -62,7 +71,10 @@ void	MateriaSource::learnMateria( AMateria* m )
 	for (int idx = 0; idx < MATERIA_MAX; idx++)
 	{
 		if (!_materias[idx])
-			_materias[idx] = m->clone();
+		{
+			_materias[idx] = m;
+			return ;
+		}
 	}
 }
 
@@ -70,7 +82,7 @@ AMateria*	MateriaSource::createMateria( std::string const & type )
 {
 	for (int idx = MATERIA_MAX - 1; idx >= 0; idx--)
 	{
-		if (_materias[idx]->getType() == type)
+		if (_materias[idx] && _materias[idx]->getType() == type)
 		{
 			return (_materias[idx]->clone());
 		}

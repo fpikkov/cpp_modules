@@ -17,9 +17,10 @@ Cure::Cure( void ) : AMateria("cure")
 
 }
 
+// While assigning a Materia to another, copying the type doesn’t make sense.
 Cure::Cure( const Cure& other ) : AMateria("cure")
 {
-
+	(void)other;
 }
 
 Cure&	Cure::operator=( const Cure& other )

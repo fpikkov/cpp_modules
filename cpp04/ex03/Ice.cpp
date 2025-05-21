@@ -12,14 +12,15 @@
 
 #include "Ice.hpp"
 
-Ice::Ice( void ) :AMateria("Ice")
+Ice::Ice( void ) : AMateria("ice")
 {
 
 }
 
+// While assigning a Materia to another, copying the type doesn’t make sense.
 Ice::Ice( const Ice& other ) : AMateria("ice")
 {
-
+	(void)other;
 }
 
 Ice&	Ice::operator=( const Ice& other )
