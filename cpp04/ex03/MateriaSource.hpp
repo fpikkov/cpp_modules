@@ -14,7 +14,8 @@
 #ifndef MATERIASOURCE_HPP
 # define MATERIASOURCE_HPP
 
-#include "IMateriaSource.hpp"
+# include "IMateriaSource.hpp"
+# include <limits>
 
 # define MATERIA_MAX 4
 

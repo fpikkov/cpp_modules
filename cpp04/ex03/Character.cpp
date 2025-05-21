@@ -137,10 +137,10 @@ void	Character::equip( AMateria* m )
 	}
 
 	// In case storage was full
-	char	buffer = 0;
+	std::string	buffer;
 	std::cout << "Character storage is full, would you like to delete the resource? y/n" << std::endl;
-	std::cin.get(buffer);
-	if (buffer == 'y' || buffer == 'Y')
+	std::getline(std::cin, buffer);
+	if (!buffer.empty() && (buffer[0] == 'y' || buffer[0] == 'Y'))
 		delete (m);
 
 }
@@ -185,10 +185,10 @@ void	Character::unequip( int idx )
 	// What are you still doing here?
 	std::cout << "The floor is full, could not unequip the requested item." << std::endl;
 
-	char	buffer = 0;
+	std::string	buffer;
 	std::cout << "Would you like to clear the items on the floor and continue with unequipping? y/n" << std::endl;
-	std::cin.get(buffer);
-	if (buffer == 'y' || buffer == 'Y')
+	std::getline(std::cin, buffer);
+	if (!buffer.empty() && (buffer[0] == 'y' || buffer[0] == 'Y'))
 	{
 		Character::clearStorage();
 		Character::unequip(idx);

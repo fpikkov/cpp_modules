@@ -46,6 +46,10 @@ static void	custom_test( void )
 	me->use(5, *milo);
 	me->use(-1, *milo);
 
+	me->unequip(5);
+	me->unequip(1);
+
+
 	delete (milo);
 	delete (me);
 	delete (src);

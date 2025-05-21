@@ -78,10 +78,10 @@ void	MateriaSource::learnMateria( AMateria* m )
 	}
 
 	// Memory safety
-	char	buffer = 0;
+	std::string	buffer;
 	std::cout << "MateriaSource storage is full, would you like to delete the resource? y/n" << std::endl;
-	std::cin.get(buffer);
-	if (buffer == 'y' || buffer == 'Y')
+	std::getline(std::cin, buffer);
+	if (!buffer.empty() && (buffer[0] == 'y' || buffer[0] == 'Y'))
 		delete (m);
 }
 
