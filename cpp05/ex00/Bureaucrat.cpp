@@ -29,6 +29,11 @@ Bureaucrat&	Bureaucrat::operator=( const Bureaucrat& other )
 	return (*this);
 }
 
+Bureaucrat::~Bureaucrat()
+{
+
+}
+
 std::string	Bureaucrat::getName( void ) const
 {
 	return (_name);
