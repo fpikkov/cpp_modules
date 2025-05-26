@@ -1,6 +1,7 @@
 #include "Bureaucrat.hpp"
 #include "ShrubberyCreationForm.hpp"
 #include "RobotomyRequestForm.hpp"
+#include "PresidentialPardonForm.hpp"
 
 int	main( void )
 {
@@ -31,8 +32,22 @@ int	main( void )
 			RobotomyRequestForm	robotomy("parking_lot");
 
 			person.signForm( robotomy );
-			robotomy.execute( person );
+			robotomy.execute( person ); // <<== replace with Bureaucrat execution
 		}
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+
+	// Test presidential pardon
+	try
+	{
+		Bureaucrat				person("Marvin", 5);
+		PresidentialPardonForm	pardon("Arthur");
+
+		person.signForm( pardon );
+		pardon.execute( person ); // <<== replace with Bureaucrat execution
 	}
 	catch(const std::exception& e)
 	{
