@@ -1,6 +1,7 @@
 #include "ShrubberyCreationForm.hpp"
+#include "Bureaucrat.hpp"
 
-static const std::string	trees[TREES_MAX] =
+static const std::string	g_trees[TREES_MAX] =
 {
 R"(
         &&& &&  & &&
@@ -59,7 +60,7 @@ void	ShrubberyCreationForm::beSigned( Bureaucrat& person ) { AForm::beSigned( pe
 void	ShrubberyCreationForm::execute( Bureaucrat const & executor ) const
 {
 	AForm::execute( executor );
-	action( this->getName() );
+	this->action( executor.getName() );
 }
 
 void	ShrubberyCreationForm::action( const std::string target ) const
@@ -82,11 +83,13 @@ void	ShrubberyCreationForm::action( const std::string target ) const
 	// Plant random tree from a list of available ones
 	for (int i = 0; i < SHRUBERY_MAX; ++i)
 	{
-		bush << trees[distrib(gen)];
+		bush << g_trees[distrib(gen)];
 	}
 
 	if (bush)
 		bush.close();
+
+	std::cout << "\033[32:1m" << "Shrubbery created in " << destination << "." << "\033[0m" << std::endl;
 }
 
 // Exception

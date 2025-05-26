@@ -1,17 +1,38 @@
 #include "Bureaucrat.hpp"
 #include "ShrubberyCreationForm.hpp"
+#include "RobotomyRequestForm.hpp"
 
 int	main( void )
 {
+	// Test shrubbery creation
 	try
 	{
-		Bureaucrat				person("Landor", 70);
-		ShrubberyCreationForm	shrub("darkwood");
+		Bureaucrat				person("Arthur", 70);
+		ShrubberyCreationForm	shrub("earth");
 
 		std::cout << shrub << std::endl;
 
 		person.signForm( shrub );
-		shrub.execute( person );
+		shrub.execute( person ); // <<== replace with Bureaucrat execution
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+
+	// Test robotomy
+	try
+	{
+		Bureaucrat	person("Marvin", 45);
+		int			iterations = 5;
+
+		for (int i = 0; i < iterations; ++i)
+		{
+			RobotomyRequestForm	robotomy("royal");
+
+			person.signForm( robotomy );
+			robotomy.execute( person );
+		}
 	}
 	catch(const std::exception& e)
 	{

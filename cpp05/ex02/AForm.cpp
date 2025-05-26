@@ -37,7 +37,7 @@ int	AForm::getExecutionGrade() const noexcept { return (_executionGrade); }
 
 std::ostream& operator<<( std::ostream& os, const AForm& obj)
 {
-	os << "AForm " << obj.getName() << (obj.getSigned() == true ? " is signed. " : " is not signed. ")
+	os << "Form " << obj.getName() << (obj.getSigned() == true ? " is signed. " : " is not signed. ")
 	<< "Grade to sign: " << obj.getSignageGrade() << ", Grade to execute: " << obj.getExecutionGrade() << ".";
 
 	return (os);
