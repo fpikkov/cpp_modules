@@ -46,8 +46,8 @@ R"(
 
 // Constructors and destructors
 
-ShrubberyCreationForm::ShrubberyCreationForm( const std::string name ) :
-	AForm( name, SHRUB_SIGN_GRADE, SHRUB_EXEC_GRADE ) {}
+ShrubberyCreationForm::ShrubberyCreationForm( const std::string target ) :
+	AForm( "Shrubbery Creation", SHRUB_SIGN_GRADE, SHRUB_EXEC_GRADE, target ) {}
 
 ShrubberyCreationForm::ShrubberyCreationForm( const ShrubberyCreationForm& other ) : AForm( other ) {}
 
@@ -60,10 +60,10 @@ void	ShrubberyCreationForm::beSigned( Bureaucrat& person ) { AForm::beSigned( pe
 void	ShrubberyCreationForm::execute( Bureaucrat const & executor ) const
 {
 	AForm::execute( executor );
-	this->action( executor.getName() );
+	this->action();
 }
 
-void	ShrubberyCreationForm::action( const std::string target ) const
+void	ShrubberyCreationForm::action() const
 {
 	// Random number generator
 	std::random_device				rd;
@@ -74,7 +74,7 @@ void	ShrubberyCreationForm::action( const std::string target ) const
 	std::string		destination;
 	std::ofstream	bush;
 
-	destination = target + "_shrubbery";
+	destination = this->getTarget() + "_shrubbery";
 	bush.open(destination.c_str(), std::ios::app);
 
 	if (!bush)

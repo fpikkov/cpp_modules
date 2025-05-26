@@ -22,7 +22,7 @@ class RobotomyRequestForm : public AForm
 {
 	public:
 		RobotomyRequestForm() = delete;
-		RobotomyRequestForm( const std::string name );
+		RobotomyRequestForm( const std::string target );
 		RobotomyRequestForm( const RobotomyRequestForm& other );
 		RobotomyRequestForm&	operator=( const RobotomyRequestForm& other ) = delete;
 		~RobotomyRequestForm() override;
@@ -31,5 +31,5 @@ class RobotomyRequestForm : public AForm
 		void	execute( Bureaucrat const & executor ) const override;
 
 	protected:
-		void	action( const std::string target ) const override;
+		void	action() const override;
 };

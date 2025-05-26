@@ -8,7 +8,7 @@ int	main( void )
 	try
 	{
 		Bureaucrat				person("Arthur", 70);
-		ShrubberyCreationForm	shrub("earth");
+		ShrubberyCreationForm	shrub("yard");
 
 		std::cout << shrub << std::endl;
 
@@ -28,7 +28,7 @@ int	main( void )
 
 		for (int i = 0; i < iterations; ++i)
 		{
-			RobotomyRequestForm	robotomy("royal");
+			RobotomyRequestForm	robotomy("parking_lot");
 
 			person.signForm( robotomy );
 			robotomy.execute( person );

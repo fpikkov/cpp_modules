@@ -3,7 +3,7 @@
 
 // Constructor and destructor
 
-AForm::AForm( const std::string name, const int signGrade, const int executeGrade ) :
+AForm::AForm( const std::string name, const int signGrade, const int executeGrade, const std::string target ) :
 	_name(name),
 	_signed(false),
 	_signageGrade(
@@ -13,19 +13,23 @@ AForm::AForm( const std::string name, const int signGrade, const int executeGrad
 	_executionGrade(
 		(executeGrade < GRADE_MAX ? throw (AForm::GradeTooHighException()) :
 		(executeGrade > GRADE_MIN ? throw (AForm::GradeTooLowException()) : executeGrade))
-	) {}
+	),
+	_target(target) {}
 
 AForm::AForm( const AForm& other ) :
 	_name(other._name),
 	_signed(other._signed),
 	_signageGrade(other._signageGrade),
-	_executionGrade(other._executionGrade) {}
+	_executionGrade(other._executionGrade),
+	_target(other._target) {}
 
 AForm::~AForm() {}
 
 // Getters
 
 std::string	AForm::getName() const noexcept { return (_name); }
+
+std::string	AForm::getTarget() const noexcept { return (_target); }
 
 bool	AForm::getSigned() const noexcept { return (_signed); }
 

@@ -38,7 +38,7 @@ class ShrubberyCreationForm : public AForm
 
 	public:
 		ShrubberyCreationForm() = delete;
-		ShrubberyCreationForm( const std::string name );
+		ShrubberyCreationForm( const std::string target );
 		ShrubberyCreationForm( const ShrubberyCreationForm& other );
 		ShrubberyCreationForm&	operator=( const ShrubberyCreationForm& other ) = delete;
 		~ShrubberyCreationForm() override;
@@ -47,5 +47,5 @@ class ShrubberyCreationForm : public AForm
 		void	execute( Bureaucrat const & executor ) const override;
 
 	protected:
-		void	action( const std::string target ) const override;
+		void	action() const override;
 };

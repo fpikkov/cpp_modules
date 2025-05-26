@@ -18,6 +18,7 @@ class AForm
 		bool				_signed;
 		const int			_signageGrade;
 		const int			_executionGrade;
+		const std::string	_target;
 
 		class GradeTooHighException : public std::exception
 		{
@@ -54,12 +55,13 @@ class AForm
 
 	public:
 		AForm() = delete;
-		AForm( const std::string name, const int signGrade, const int executeGrade );
+		AForm( const std::string name, const int signGrade, const int executeGrade, const std::string target );
 		AForm( const AForm& other );
 		AForm&	operator=( const AForm& other ) = delete; // Cannot modify immutable variables
 		virtual ~AForm() = 0; // Pure virtual to block instantiation
 
 		std::string		getName()			const noexcept;
+		std::string		getTarget()			const noexcept;
 		bool			getSigned()			const noexcept;
 		int				getSignageGrade()	const noexcept;
 		int				getExecutionGrade()	const noexcept;
@@ -68,7 +70,7 @@ class AForm
 		virtual void	execute( Bureaucrat const & executor ) const;
 
 	protected:
-		virtual void	action( const std::string target ) const = 0;
+		virtual void	action() const = 0;
 };
 
 std::ostream& operator<<( std::ostream& os, const AForm& obj);

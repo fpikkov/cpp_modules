@@ -7,14 +7,14 @@ static const std::string	g_noises[NOISES_MAX] =
 	"**Brbrbrbrbrrr**",
 	"**Rrrbrrrbrrrr**",
 	"**Kchnk**",
-	"**Brrrt**"
+	"**Brrrt**",
 	"**Rrrt-rrt**"
 };
 
 // Constructors and destructors
 
-RobotomyRequestForm::RobotomyRequestForm( const std::string name ) :
-	AForm( name, ROBOTOMY_SIGN_GRADE, ROBOTOMY_EXEC_GRADE ) {}
+RobotomyRequestForm::RobotomyRequestForm( const std::string target ) :
+	AForm( "Robotomy", ROBOTOMY_SIGN_GRADE, ROBOTOMY_EXEC_GRADE, target ) {}
 
 RobotomyRequestForm::RobotomyRequestForm( const RobotomyRequestForm& other ) : AForm( other ) {}
 
@@ -27,10 +27,10 @@ void	RobotomyRequestForm::beSigned( Bureaucrat& person ) { AForm::beSigned( pers
 void	RobotomyRequestForm::execute( Bureaucrat const & executor ) const
 {
 	AForm::execute( executor );
-	this->action( executor.getName() );
+	this->action();
 }
 
-void	RobotomyRequestForm::action( const std::string target ) const
+void	RobotomyRequestForm::action() const
 {
 	// Randomizer with equal distribution
 	std::random_device				rd;
@@ -49,10 +49,10 @@ void	RobotomyRequestForm::action( const std::string target ) const
 	// Was the robotomy sucessful
 	if (success(gen) == true)
 	{
-		std::cout << "\033[32:1m" << target << " has been robotomized." << "\033[0m" << std::endl;
+		std::cout << "\033[32:1m" << this->getTarget() << " has been robotomized." << "\033[0m" << std::endl;
 	}
 	else
 	{
-		std::cout << "\033[31:1m" << target << "'s robotomy has failed." << "\033[0m" << std::endl;
+		std::cout << "\033[31:1m" << this->getTarget() << " robotomy has failed." << "\033[0m" << std::endl;
 	}
 }
