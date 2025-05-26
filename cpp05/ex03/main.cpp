@@ -11,12 +11,11 @@ int	main( void )
 		Bureaucrat	person("Marvin", 70);
 
 		form = bot.makeForm("shrubbery creation", "home");
-		std::cout << *form << std::endl;
-
-		person.signForm( *form );
-		person.executeForm( *form );
 		if (form)
 		{
+			std::cout << *form << std::endl;
+			person.signForm( *form );
+			person.executeForm( *form );
 			delete (form);
 			form = nullptr;
 		}

@@ -84,7 +84,7 @@ AForm*	Intern::makeForm( const std::string formName, const std::string target )
 			form = new RobotomyRequestForm(target);
 			break ;
 		default:
-			throw (Intern::FormInvalidException());
+			return (nullptr);
 			break ;
 	}
 	std::cout << "Intern creates " << form->getName() << std::endl;
