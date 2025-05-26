@@ -14,7 +14,7 @@ int	main( void )
 		std::cout << shrub << std::endl;
 
 		person.signForm( shrub );
-		shrub.execute( person ); // <<== replace with Bureaucrat execution
+		person.executeForm( shrub );
 	}
 	catch(const std::exception& e)
 	{
@@ -32,7 +32,7 @@ int	main( void )
 			RobotomyRequestForm	robotomy("parking_lot");
 
 			person.signForm( robotomy );
-			robotomy.execute( person ); // <<== replace with Bureaucrat execution
+			person.executeForm( robotomy );
 		}
 	}
 	catch(const std::exception& e)
@@ -43,11 +43,11 @@ int	main( void )
 	// Test presidential pardon
 	try
 	{
-		Bureaucrat				person("Marvin", 5);
+		Bureaucrat				person("Marvin", 45);
 		PresidentialPardonForm	pardon("Arthur");
 
 		person.signForm( pardon );
-		pardon.execute( person ); // <<== replace with Bureaucrat execution
+		person.executeForm( pardon );
 	}
 	catch(const std::exception& e)
 	{
