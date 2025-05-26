@@ -5,7 +5,7 @@ CYAN = \033[1;36m
 CLEAR = \033[0m
 
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++11 -g
+CXXFLAGS = -Wall -Wextra -Werror -std=c++11
 INC_FLAGS = -I {INCLUDES}
 
 NAME = intern
