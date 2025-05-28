@@ -38,6 +38,13 @@ Up until this point all our projects have been written in C with multiple constr
 2. Introduction to the concept of abstract classes which cannot be instantiated on their own.
 3. Implement multiple pure abstract classes (commonly called interfaces), an abstract class and concrete classes. Multiple classes will include pointers to heap allocated objects which will require proper cleanup using the delete keyword.
 
+### CPP05
+0. Create a class which throws a custom exception based on wrong parameters.
+1. Implement a second class with it's own exceptions which get thrown when
+the class is initialized with invalid parameters.
+2. Make the class from the previous exercise abstract and implement three concrete classes based off of it. The concrete classes will have some unique functionality.
+3. Create a class which will construct one of the three previously created ones based on input parameters. The Intern class will attempt to match up the Form class type in a loop, return a valid enum which is then used in a switch case to allocate and return a pointer to the class which was asked for.
+
 ## LICENSE
 
 This repository is licensed under GNU GPL v3.0.
