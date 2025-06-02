@@ -7,7 +7,7 @@ int	main( int argc, char** argv )
 	for (int i = 1; i < argc; ++i)
 	{
 		literal = argv[i];
-		// Call the method for conversion
+		ScalarConverter::convert(literal);
 	}
 
 	return (0);

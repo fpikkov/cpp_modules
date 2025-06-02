@@ -8,7 +8,7 @@ CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++11
 INC_FLAGS = -I {INCLUDES}
 
-NAME = scalars
+NAME = scalar
 
 BUILD = ${NAME}
 
