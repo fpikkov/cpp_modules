@@ -45,6 +45,11 @@ the class is initialized with invalid parameters.
 2. Make the class from the previous exercise abstract and implement three concrete classes based off of it. The concrete classes will have some unique functionality.
 3. Create a class which will construct one of the three previously created ones based on input parameters. The Intern class will attempt to match up the Form class type in a loop, return a valid enum which is then used in a switch case to allocate and return a pointer to the class which was asked for.
 
+### CPP06
+0. Create a class which can not be instantiated. Member function accepts a string which then gets converted into char, int, float and double. Introduction to static_cast.
+1. Create a class which can not be instantiated. Member function will either serialize a struct into uintptr_t or deserialize it. Introduction to reinterpret_cast.
+2. Create a base class and three derived classes along with member function in the base class whih lets you identify the actual type of the class given as either pointer to base class or reference. Introduction to dynamic_cast.
+
 ## LICENSE
 
 This repository is licensed under GNU GPL v3.0.
