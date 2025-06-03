@@ -181,10 +181,10 @@ void	ScalarConverter::convert( std::string literal )
 		break ;
 	case FLOAT:
 		f = convertFloat(literal);
-		char_impossible = isCharImpossible((double)f);
+		char_impossible = isCharImpossible(static_cast<double>(f));
 		if (!char_impossible)
 			c = static_cast<char>(f);
-		int_impossible = isIntImpossible((double)f);
+		int_impossible = isIntImpossible(static_cast<double>(f));
 		if (!int_impossible)
 			i = static_cast<int>(f);
 		d = static_cast<double>(f);
