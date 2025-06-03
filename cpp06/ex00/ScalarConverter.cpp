@@ -4,7 +4,7 @@
 
 static bool	isChar( std::string literal )
 {
-	return ((literal.length() == 1) && std::isalpha(literal[0]));
+	return ((literal.length() == 1) && std::isprint(literal[0]) && !std::isdigit(literal[0]));
 }
 
 static bool	isInt( std::string literal )
@@ -36,6 +36,9 @@ static bool	isFloat( std::string literal )
 	// Check pseudo-literals
 	if ( !literal.compare("-inff") || !literal.compare("+inff") || !literal.compare("nanf") )
 		return (true);
+
+	if (literal.find('f') == std::string::npos || literal.back() != 'f' )
+		return (false);
 
 	size_t idx = 0;
 	if (literal[idx] == '+' || literal[idx] == '-')
@@ -127,6 +130,22 @@ static double	convertDouble( std::string literal )
 	return (std::stod(literal));
 }
 
+static bool	isCharImpossible( double d )
+{
+	if (!std::isnan(d) && std::isfinite(d) && (d >= -128.0 && d < 128.0))
+		return (false);
+	return (true);
+}
+
+static bool	isIntImpossible( double d )
+{
+	if (!std::isnan(d) && std::isfinite(d) \
+		&& (d >= static_cast<double>(std::numeric_limits<int>::min()) \
+		&& d <= static_cast<double>(std::numeric_limits<int>::max())))
+		return (false);
+	return (true);
+}
+
 // Required method
 
 void	ScalarConverter::convert( std::string literal )
@@ -142,6 +161,7 @@ void	ScalarConverter::convert( std::string literal )
 	float	f = 0.0f;
 	double	d = 0.0;
 
+	// Explicit casts
 	switch (type)
 	{
 	case CHAR:
@@ -152,7 +172,7 @@ void	ScalarConverter::convert( std::string literal )
 		break ;
 	case INTEGER:
 		i = std::stoi(literal);
-		if (i >= 0 && i <= 127)
+		if (i >= -128 && i <= 127)
 			c = static_cast<char>(i);
 		else
 			char_impossible = true;
@@ -161,30 +181,22 @@ void	ScalarConverter::convert( std::string literal )
 		break ;
 	case FLOAT:
 		f = convertFloat(literal);
-		if (!std::isnan(f) && std::isfinite(f) && (f >= 0.0f && f < 128.0f))
+		char_impossible = isCharImpossible((double)f);
+		if (!char_impossible)
 			c = static_cast<char>(f);
-		else
-			char_impossible = true;
-		if (!std::isnan(f) && std::isfinite(f) \
-			&& (f >= static_cast<float>(std::numeric_limits<int>::min()) \
-			&& f <= static_cast<float>(std::numeric_limits<int>::max())))
+		int_impossible = isIntImpossible((double)f);
+		if (!int_impossible)
 			i = static_cast<int>(f);
-		else
-			int_impossible = true;
 		d = static_cast<double>(f);
 		break ;
 	case DOUBLE:
 		d = convertDouble(literal);
-		if (!std::isnan(d) && std::isfinite(d) && (d >= 0.0 && d < 128.0))
-			c = static_cast<char>(f);
-		else
-			char_impossible = true;
-		if (!std::isnan(d) && std::isfinite(d) \
-			&& (d >= static_cast<double>(std::numeric_limits<int>::min()) \
-			&& d <= static_cast<double>(std::numeric_limits<int>::max())))
-			i = static_cast<int>(f);
-		else
-			int_impossible = true;
+		char_impossible = isCharImpossible(d);
+		if (!char_impossible)
+			c = static_cast<char>(d);
+		int_impossible = isIntImpossible(d);
+		if (!int_impossible)
+			i = static_cast<int>(d);
 		f = static_cast<float>(d);
 		break ;
 	default:
@@ -192,41 +204,31 @@ void	ScalarConverter::convert( std::string literal )
 		break;
 	}
 
-	// Printing char
-	if (char_impossible || !success)
-		std::cout << "char: impossible" << std::endl;
-	else
+	// Printing
+	if (success)
 	{
-		if (std::isprint(c))
+		if (char_impossible)
+			std::cout << "char: impossible" << std::endl;
+		else if (std::isprint(c))
 			std::cout << "char: '" << c << "'" << std::endl;
 		else
 			std::cout << "char: Non displayable" << std::endl;
-	}
 
-	// Printiing int
-	if (int_impossible || !success)
-		std::cout << "int: impossible" << std::endl;
-	else
-		std::cout << "int: " << i << std::endl;
+		if (int_impossible)
+			std::cout << "int: impossible" << std::endl;
+		else
+			std::cout << "int: " << i << std::endl;
 
-	// Printing float
-	if (!success)
-		std::cout << "float: impossiblle" << std::endl;
-	else
-	{
 		std::cout << std::fixed << std::setprecision(1);
 		std::cout << "float: " << f << "f" << std::endl;
-		std::cout << std::fixed << std::setprecision(0);
-	}
-
-	// Printing double
-	if (!success)
-		std::cout << "double: impossible" << std::endl;
-	else
-	{
-		std::cout << std::fixed << std::setprecision(1);
 		std::cout << "double: " << d << std::endl;
 		std::cout << std::fixed << std::setprecision(0);
 	}
-
+	else
+	{
+		std::cout << "char: impossible" << std::endl;
+		std::cout << "int: impossible" << std::endl;
+		std::cout << "float: impossiblle" << std::endl;
+		std::cout << "double: impossible" << std::endl;
+	}
 }
