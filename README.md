@@ -50,6 +50,11 @@ the class is initialized with invalid parameters.
 1. Create a class which can not be instantiated. Member function will either serialize a struct into uintptr_t or deserialize it. Introduction to reinterpret_cast.
 2. Create a base class and three derived classes along with member function in the base class whih lets you identify the actual type of the class given as either pointer to base class or reference. Introduction to dynamic_cast.
 
+### CPP07
+0. Create templates for swapping two values and finding min/max between two values. The two arguments should be of the same type and support all of the comparison operators.
+1. Create a functiion template iter which takes in three paramateres (address of an array, length of the array, function pointer which gets called on each element of the array) and provide enough code to demonstrate the functionality of such a function template.
+2. Make a class template named Array which will construct an array based on the type used to instantiate the class. When instantiated with no constructor parameters the array will be empty. When using the overloaded constructor then a size of the array can be specified. The Array class should be accessible with the [] operator by being both readable and modifyiable. If an out of range index is accessed, the class should throw an exceptiion.
+
 ## LICENSE
 
 This repository is licensed under GNU GPL v3.0.
