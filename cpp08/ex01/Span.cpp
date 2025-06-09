@@ -4,7 +4,7 @@
 Span::Span( const unsigned int& N ) :
 	_size( N < _vec.max_size() ? N : throw(std::overflow_error("Container can not store that many elements"))) {}
 Span::Span( const Span& other ) { *this = other; }
-Span&	Span::operator=( const Span& other )
+auto	Span::operator=( const Span& other ) -> Span&
 {
 	if (this != &other)
 	{
