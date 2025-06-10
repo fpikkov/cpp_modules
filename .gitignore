@@ -33,3 +33,4 @@
 
 # Config
 .vscode/
+*.csv
