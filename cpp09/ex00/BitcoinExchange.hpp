@@ -25,6 +25,11 @@ class BitcoinExchange
 			std::chrono::year_month_day	_date;
 			float						_value;
 		};
+		class BadInputException : public std::invalid_argument
+		{
+			public:
+				BadInputException( const std::string& );
+		};
 
 		std::deque<Entry>	_dbMarket;
 		std::string			_inputFilename;
@@ -34,8 +39,8 @@ class BitcoinExchange
 		auto		parseCSV( const std::string& ) -> bool;
 		auto		calculatePrice( const std::string& ) -> void;
 		static auto	printEntry( const Entry&, const Entry& ) -> void;
-		static auto	printMissingMarketData() -> void;
-		static auto	chronoToString( std::chrono::year_month_day date ) -> std::string;
+		static auto	printMissingMarketData( const Entry& ) -> void;
+		static auto	chronoToString( const std::chrono::year_month_day& date ) -> std::string;
 
 	public:
 		BitcoinExchange();

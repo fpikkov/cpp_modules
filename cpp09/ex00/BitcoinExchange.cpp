@@ -4,6 +4,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <algorithm>
+#include <iomanip>
 
 // Canonical form
 BitcoinExchange::BitcoinExchange() : _marketFilename(M_FILENAME) { BitcoinExchange::parseCSV(_marketFilename); }
@@ -30,9 +31,9 @@ auto	BitcoinExchange::parseEntry( const std::string& field , const char& midSep 
 		throw (std::invalid_argument("date and value entry was empty"));
 
 	if (!(sstream >> y >> sep1 >> m >> sep2 >> d >> sep3 >> v))
-		throw (std::invalid_argument("bad input"));
+		throw (BitcoinExchange::BadInputException("bad input"));
 	if (sep1 != '-' || sep2 != '-' || sep3 != midSep)
-		throw (std::invalid_argument("bad input"));
+		throw (BitcoinExchange::BadInputException("bad input"));
 	if (v > 1000.0f)
 		throw (std::invalid_argument("too large a number"));
 	else if (v < 0.0f)
@@ -45,7 +46,7 @@ auto	BitcoinExchange::parseEntry( const std::string& field , const char& midSep 
 	entry._value = v;
 
 	if (!entry._date.ok())
-		throw (std::invalid_argument("invalid date"));
+		throw (BitcoinExchange::BadInputException("invalid date"));
 
 	return (entry);
 }
@@ -63,7 +64,7 @@ auto	BitcoinExchange::parseCSV( const std::string& filename ) -> bool
 
 	if (!infileCSV)
 	{
-		std::cerr << "Error: Unable to open CSV, did you include data.csv?" << std::endl;
+		std::cerr << "Error: unable to open CSV, did you include data.csv?" << std::endl;
 		return (false);
 	}
 
@@ -75,6 +76,9 @@ auto	BitcoinExchange::parseCSV( const std::string& filename ) -> bool
 	}
 	while (std::getline(infileCSV, line))
 	{
+		if (line.empty())
+			continue ;
+
 		try
 		{
 			entry = parseEntry(line, ',');
@@ -92,12 +96,7 @@ auto	BitcoinExchange::parseCSV( const std::string& filename ) -> bool
 	infileCSV.close();
 	return (true);
 }
-/*
-	NOTE: find_if can be readapted here to ffind a match in the database
-	TODO: has to retrieve the closest Market date to the parsed date,
-		then multiply the retrieved market value by the coin amount at that time.
-	TODO: Print "Error: " with an explicit error when the function throws an exception.
- */
+
 auto	BitcoinExchange::calculatePrice( const std::string& filename ) -> void
 {
 	Entry			entry;
@@ -106,12 +105,12 @@ auto	BitcoinExchange::calculatePrice( const std::string& filename ) -> void
 
 	if (!infileInput)
 	{
-		std::cerr << "Unable to open " << filename << std::endl;
+		std::cerr << "Error: unable to open input file " << filename << std::endl;
 		return ;
 	}
 	if (_dbMarket.empty())
 	{
-		std::cerr << "No exchange rate database available" << std::endl;
+		std::cerr << "Error: no exchange rate database available" << std::endl;
 		return ;
 	}
 
@@ -123,9 +122,12 @@ auto	BitcoinExchange::calculatePrice( const std::string& filename ) -> void
 	}
 	while (std::getline(infileInput, line))
 	{
+		if (line.empty())
+			continue ;
+
 		try
 		{
-			entry = parseEntry(line, ',');
+			entry = parseEntry(line, '|');
 			auto it = std::find_if(
 				_dbMarket.begin(),
 				_dbMarket.end(),
@@ -134,8 +136,9 @@ auto	BitcoinExchange::calculatePrice( const std::string& filename ) -> void
 			if (it != _dbMarket.end())
 				printEntry(entry, (*it));
 			else
-				printMissingMarketData();
+				printMissingMarketData(entry);
 		}
+		catch(const BitcoinExchange::BadInputException& e) { std::cerr << "Error: " << e.what() << " => " << line << std::endl; }
 		catch(const std::exception& e) { std::cerr << "Error: " << e.what() << std::endl; }
 	}
 	infileInput.close();
@@ -147,16 +150,20 @@ auto	BitcoinExchange::printEntry( const Entry& input, const Entry& market ) -> v
 	std::cout << date << " => " << input._value << " = " << (input._value * market._value) << std::endl;
 }
 
-auto	BitcoinExchange::printMissingMarketData() -> void
+auto	BitcoinExchange::printMissingMarketData( const Entry& entry ) -> void
 {
-	std::cerr << "Error: missing market data" << std::endl;
+	std::string date = BitcoinExchange::chronoToString(entry._date);
+	std::cerr << "Error: missing market data for " << date << std::endl;
 }
 
-auto	BitcoinExchange::chronoToString( std::chrono::year_month_day date ) -> std::string
+auto	BitcoinExchange::chronoToString(  const std::chrono::year_month_day& date ) -> std::string
 {
 	std::ostringstream	sstream;
 
-	sstream << static_cast<int>(date.year()) << '-' << static_cast<unsigned>(date.month()) << '-' << static_cast<unsigned>(date.day());
+	sstream << std::setfill('0')
+		<< std::setw(4) << static_cast<int>(date.year()) << '-'
+		<< std::setw(2) << static_cast<unsigned>(date.month()) << '-'
+		<< std::setw(2) << static_cast<unsigned>(date.day());
 	return (sstream.str());
 }
 
@@ -171,3 +178,6 @@ auto	BitcoinExchange::launch( const std::string& filename ) -> void
 	}
 	BitcoinExchange::calculatePrice(filename);
 }
+
+// Custom exception class
+BitcoinExchange::BadInputException::BadInputException( const std::string& message ) : std::invalid_argument(message) {}
