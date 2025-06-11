@@ -53,7 +53,7 @@ auto	RPN::applyOperator( const int& type ) -> void
 			break;
 		case 2:
 			if (right == 0)
-			throw (std::logic_error("Error: division by zero"));
+				throw (std::logic_error("Error: division by zero"));
 			result = left / right;
 			break;
 		case 3:
