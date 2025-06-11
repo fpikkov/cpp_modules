@@ -1,11 +1,5 @@
 #include "BitcoinExchange.hpp"
 
-/**
-	ADDITIONAL INFO:
-	Handle leap days
-	Handle days before BTC was created
- */
-
 int main( int argc, char** argv )
 {
 	if (argc < 2)
