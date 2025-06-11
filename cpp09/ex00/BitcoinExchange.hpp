@@ -2,7 +2,6 @@
 
 #include <deque>
 #include <chrono>
-#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -13,6 +12,11 @@
  *  .insert(std::find_if( []() { current_date < prev_date; ++it }, Entry _name));
  */
 
+#ifdef M_FILENAME
+# undef M_FILENAME
+#endif
+#define M_FILENAME "data.csv"
+
 class BitcoinExchange
 {
 	private:
@@ -22,21 +26,23 @@ class BitcoinExchange
 			float						_value;
 		};
 
-		auto	parseEntry( const std::string& , const char& ) const -> Entry&;
-		auto	parseCSV( const std::string& ) -> void;
-		auto	parseInput( const std::string& ) -> void;
-
-		std::ifstream		_infileUser; // Put in parser
 		std::deque<Entry>	_dbMarket;
-		std::deque<Entry>	_dbCoins;
+		std::string			_inputFilename;
 		const std::string	_marketFilename;
 
+		auto		parseEntry( const std::string& , const char& ) const -> Entry;
+		auto		parseCSV( const std::string& ) -> bool;
+		auto		calculatePrice( const std::string& ) -> void;
+		static auto	printEntry( const Entry&, const Entry& ) -> void;
+		static auto	printMissingMarketData() -> void;
+		static auto	chronoToString( std::chrono::year_month_day date ) -> std::string;
+
 	public:
-		BitcoinExchange() = delete;
-		BitcoinExchange( const std::string& _fileName );
+		BitcoinExchange();
+		BitcoinExchange( const std::string& );
 		BitcoinExchange( const BitcoinExchange& ) = delete;
 		auto operator=( const BitcoinExchange& ) -> BitcoinExchange& = delete;
 		~BitcoinExchange();
 
-
+		auto	launch( const std::string& ) -> void;
 };
