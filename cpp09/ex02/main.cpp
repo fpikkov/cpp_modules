@@ -47,11 +47,19 @@ static auto	vector_sort( std::string inputString ) -> bool
 	}
 
 	// Sorting
-	PmergeMe<int, std::vector<int>>	pm(inputValues);
+	try
+	{
+		PmergeMe<int, std::vector<int>>	pm(inputValues);
 
-	// TODO: a lot
-	pm.printInfo();
+		// TODO: a lot
 
+		pm.printInfo();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+		return (false);
+	}
 	return (true);
 }
 
@@ -76,10 +84,18 @@ static auto	list_sort( std::string inputString ) -> bool
 	}
 
 	// Sorting
-	PmergeMe<int, std::list<int>>	pm(inputValues);
+	try
+	{
+		PmergeMe<int, std::list<int>>	pm(inputValues);
 
-	// TODO: a lot
-	pm.printInfo();
+		// TODO: a lot
 
+		pm.printInfo();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+		return (false);
+	}
 	return (true);
 }
