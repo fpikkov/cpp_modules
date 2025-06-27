@@ -3,27 +3,29 @@
 #include <chrono>
 #include <vector>
 #include <utility>
-#include <optional>
+#include <algorithm>
 #include <iostream>
 #include "ft.hpp"
 
 #define PRINT_MAX 5
 
-template <std::integral T, ft::container C = std::vector<T>>
+template <std::integral T, ft::container Container = std::vector<T>>
 class PmergeMe
 {
 	private:
 		using duration = std::chrono::duration<double, std::micro>;
 
-		C			_original;
-		C			_sorted;
+		Container	_original;
+		Container	_sorted;
 		duration	_time;
 		bool		_numbersSorted;
+		size_t		_grouping;
+		size_t		_comparisons;
 
-		auto printContainer( const C container ) const -> void
+		auto printContainer( const Container cont ) const -> void
 		{
-			auto it = container.begin();
-			for (size_t idx = 0; idx < container.size() && !(idx > PRINT_MAX) && it != container.end(); ++idx, ++it)
+			auto it = cont.begin();
+			for (size_t idx = 0; idx < cont.size() && !(idx > PRINT_MAX) && it != cont.end(); ++idx, ++it)
 			{
 				if (idx < PRINT_MAX)
 					std::cout << ' ' << (*it);
@@ -32,56 +34,32 @@ class PmergeMe
 			}
 			std::cout << std::endl;
 		}
-		auto recurse( C cont ) -> C
+		auto sortPairs() -> void // Step 1 of the Ford-Johnson algorithm
 		{
-			using value_type = typename C::value_type; // integral or pair
-			using pair = std::pair<value_type, value_type>; // new pair gets defined during recursion
+			size_t groupSize = 1 << _grouping;
+			auto it = _sorted.begin();
+			auto ite = _sorted.end();
 
-			std::optional<value_type> unpairable;
-			C<pair> current;
-
-			if (cont.size() <= 1)
-				return (cont);
-
-			for ( auto it = cont.begin(); it != cont.end();; )
+			if ( std::ranges::distance(it, ite) < static_cast<std::ptrdiff_t>(2 * groupSize) ) // Go to steps 2 and 3
+				return ;
+			while ( std::ranges::distance(it, ite) >= static_cast<std::ptrdiff_t>(2 * groupSize) )
 			{
-				value_type a = *it++;
-				if ( it != cont.end() )
-				{
-					value_type b = (*it);
-					current.emplace_back(ft::make_ordered_pair(a, b));
-				}
-				else
-					unpairable = a;
+				auto first_begin = it;
+				auto second_begin = std::next(first_begin, groupSize);
+
+				T first_max = *std::max_element(first_begin, second_begin);
+				T second_max = *std::max_element(second_begin, std::next(second_begin, groupSize));
+				++_comparisons;
+
+				if ( first_max > second_max )
+					std::swap_ranges(first_begin, second_begin, second_begin);
+
+				std::advance(it, 2 * groupSize);
 			}
 
-/*			stores the unpairable part but in the _sorted container?
-			if (unpairable.has_value())
-			{
-				// Reqires cusstom comparator which would check the rightmost value. Otherwise pair into { max, min }
-				auto pos = std::lower_bound(_sorted.begin(), _sorted.end(), unpairable.value());
-				_sorted.insert(pos, unpairable.value());
-			}
-			return (_sorted);
- */
+			++_grouping;
+			sortPairs();
 		}
-
-	public:
-		PmergeMe() = delete;
-		PmergeMe( C values ) : _numbersSorted(false)
-		{
-			for ( auto& v : values )
-				_original.insert(_original.end(), v);
-			checkIfSorted();
-		}
-		PmergeMe( const PmergeMe& ) = delete;
-		PmergeMe& operator=( const PmergeMe& ) = delete;
-		~PmergeMe() {}
-
-		auto getOriginal() const -> const C& { return (_original); }
-		auto getSorted() const -> const C& { return (_sorted); }
-		auto getTime() const -> const duration& { return (_time); }
-
 		auto checkIfSorted() -> bool
 		{
 			auto it = _original.begin();
@@ -96,20 +74,52 @@ class PmergeMe
 			{
 				if ( temp > (*it) )
 					return (_numbersSorted);
+				temp = (*it);
 			}
 			_numbersSorted = true;
 			return (_numbersSorted);
 		}
-		auto printInfo() const -> void
+
+	public:
+		PmergeMe() = delete;
+		PmergeMe( Container values ) : _numbersSorted(false), _grouping(0), _comparisons(0)
+		{
+			for ( auto& v : values )
+			{
+				_original.insert(_original.end(), v);
+				_sorted.insert(_sorted.end(), v);
+			}
+			checkIfSorted();
+		}
+		PmergeMe( const PmergeMe& ) = delete;
+		PmergeMe& operator=( const PmergeMe& ) = delete;
+		~PmergeMe() {}
+
+		auto getOriginal() const -> const Container& { return (_original); }
+		auto getSorted() const -> const Container& { return (_sorted); }
+		auto getTime() const -> const duration& { return (_time); }
+		auto getComparisons() const -> const size_t& { return (_comparisons); }
+
+		auto printBefore() const -> void
 		{
 			std::cout << "Before:";
 			printContainer(_original);
 		}
+		auto printAfter() const -> void
+		{
+			std::cout << "After:";
+			printContainer(_sorted);
+		}
 		auto printTime( const std::string& cType ) const -> void
 		{
-			std::cout << "Time to process a range of\t" << _sorted.size()
+			std::cout << "Time to process a range of " << _sorted.size()
 			<< " elements with std::" << cType << " : " << _time << std::endl;
 		}
+		auto printComparisons() const -> void
+		{
+			std::cout << "Performed comparisons: " << _comparisons << std::endl;
+		}
+
 		auto launch() -> void
 		{
 			if (_numbersSorted)
@@ -119,7 +129,11 @@ class PmergeMe
 			}
 			const auto start = std::chrono::high_resolution_clock::now();
 			// TODO: Sort the numbers
+			// ----- TESTING --------
+			sortPairs();
+			// ----- ------- --------
 			const auto end = std::chrono::high_resolution_clock::now();
 			_time = end - start;
+			_numbersSorted = true;
 		}
 };
