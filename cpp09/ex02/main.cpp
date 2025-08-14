@@ -1,15 +1,15 @@
 #include "PmergeMe.hpp"
 #include <list>
 
-static auto	vector_sort( std::string inputString ) -> bool;
-static auto	list_sort( std::string inputString ) -> bool;
+static bool	vector_sort( std::string sequence );
+static bool	list_sort( std::string sequence );
 
 int main( int argc, char** argv )
 {
 	// Parsing
-	std::string	inputString;
+	std::string inputString;
 
-	inputString = ft::args_to_string(argc, argv);
+	inputString = args_to_string(argc, argv);
 	if (inputString.empty())
 	{
 		std::cerr << "Error: no integral arguments to parse" << std::endl;
@@ -26,37 +26,15 @@ int main( int argc, char** argv )
 	return (0);
 }
 
-static auto	vector_sort( std::string inputString ) -> bool
+static bool	vector_sort( std::string sequence )
 {
-	// Parsing
-	std::vector<int>	inputValues;
-
 	try
 	{
-		ft::string_to_container<int>(inputString, inputValues);
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << std::endl;
-		return (false);
-	}
-	if (inputValues.empty())
-	{
-		std::cerr << "Error: failed to parse values" << std::endl;
-		return (false);
-	}
+		PmergeMe<int, std::vector<int>> pm(sequence);
 
-	// Sorting
-	try
-	{
-		PmergeMe<int, std::vector<int>>	pm(inputValues);
-
-		// TODO: a lot
+		pm.printContainer("Before:");
 		pm.launch();
-
-		pm.printBefore();
-		pm.printAfter();
-		pm.printComparisons();
+		pm.printContainer("After:");
 		pm.printTime("vector");
 	}
 	catch(const std::exception& e)
@@ -67,34 +45,13 @@ static auto	vector_sort( std::string inputString ) -> bool
 	return (true);
 }
 
-static auto	list_sort( std::string inputString ) -> bool
+static bool	list_sort( std::string sequence )
 {
-	// Parsing
-	std::list<int>	inputValues;
-
 	try
 	{
-		ft::string_to_container<int>(inputString, inputValues);
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << std::endl;
-		return (false);
-	}
-	if (inputValues.empty())
-	{
-		std::cerr << "Error: failed to parse values" << std::endl;
-		return (false);
-	}
+		PmergeMe<int, std::list<int>> pm(sequence);
 
-	// Sorting
-	try
-	{
-		PmergeMe<int, std::list<int>>	pm(inputValues);
-
-		// TODO: a lot
 		pm.launch();
-
 		pm.printTime("list");
 	}
 	catch(const std::exception& e)

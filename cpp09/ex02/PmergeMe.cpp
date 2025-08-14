@@ -1,6 +1,6 @@
-#include "ft.hpp"
+#include "PmergeMe.hpp"
 
-auto ft::args_to_string( int argc, char** argv ) -> std::string
+std::string	args_to_string( int argc, char** argv )
 {
 	std::string	temp;
 

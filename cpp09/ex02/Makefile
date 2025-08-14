@@ -12,8 +12,8 @@ NAME = PmergeMe
 
 BUILD = ${NAME}
 
-INCLUDES = PmergeMe.hpp ft.hpp
-SRCS = main.cpp ft.cpp
+INCLUDES = PmergeMe.hpp
+SRCS = main.cpp PmergeMe.cpp
 
 OBJS = ${SRCS:.cpp=.o}
 

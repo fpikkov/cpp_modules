@@ -5,27 +5,68 @@
 #include <utility>
 #include <algorithm>
 #include <iostream>
-#include "ft.hpp"
+#include <iterator>
+#include <concepts>
+#include <sstream>
+#include <stdexcept>
 
-#define PRINT_MAX 5
+static constexpr size_t const PRINT_MAX = 5;
 
-template <std::integral T, ft::container Container = std::vector<T>>
+template <typename T>
+concept container = requires( T type )
+{
+	typename T::value_type;
+	typename T::iterator;
+	{ type.begin() } -> std::input_iterator;
+	{ type.end() } -> std::input_iterator;
+	{ type.empty() } -> std::same_as<decltype(type.empty())>;
+};
+
+template <std::integral T, container Container = std::vector<T>>
 class PmergeMe
 {
 	private:
-		using duration = std::chrono::duration<double, std::micro>;
+		using duration = std::chrono::duration<double, std::microx>;
 
-		Container	_original;
-		Container	_sorted;
+		Container	_sequence;
 		duration	_time;
-		bool		_numbersSorted;
-		size_t		_grouping;
-		size_t		_comparisons;
 
-		auto printContainer( const Container cont ) const -> void
+		void containerize( const std::string& str )
 		{
-			auto it = cont.begin();
-			for (size_t idx = 0; idx < cont.size() && !(idx > PRINT_MAX) && it != cont.end(); ++idx, ++it)
+			std::istringstream	sstream(str);
+			T					value;
+
+			while (sstream >> value)
+				original.insert(values.end(), value);
+			if (!sstream.eof())
+				throw (std::runtime_error("Error: failed to parse integral values"));
+		}
+
+	public:
+		// Rule of five
+		PmergeMe() = delete;
+		PmergeMe( const std::string& sequence )	{ containerize(sequence); }
+		PmergeMe( const PmergeMe& ) = delete;
+		PmergeMe& operator=( const PmergeMe& ) = delete;
+		~PmergeMe() {}
+
+		// Getters
+		const Container&	getSequence()	const	{ return (_sequence); }
+		const duration&		getTime()		const	{ return (_time); }
+
+		// Helpers
+		void	printTime( const std::string& cType ) const
+		{
+			std::cout << "Time to process a range of " << _sorted.size()
+			<< " elements with std::" << cType << " : " << _time << std::endl;
+		}
+
+		void	printContainer( const std::string& prefix ) const
+		{
+			std::cout << prefix;
+
+			auto it = _sequence.begin();
+			for (size_t idx = 0; idx < cont.size() && !(idx > PRINT_MAX) && it != _sequence.end(); ++idx, ++it)
 			{
 				if (idx < PRINT_MAX)
 					std::cout << ' ' << (*it);
@@ -34,106 +75,20 @@ class PmergeMe
 			}
 			std::cout << std::endl;
 		}
-		auto sortPairs() -> void // Step 1 of the Ford-Johnson algorithm
+
+		void	launch()
 		{
-			size_t groupSize = 1 << _grouping;
-			auto it = _sorted.begin();
-			auto ite = _sorted.end();
-
-			if ( std::ranges::distance(it, ite) < static_cast<std::ptrdiff_t>(2 * groupSize) ) // Go to steps 2 and 3
-				return ;
-			while ( std::ranges::distance(it, ite) >= static_cast<std::ptrdiff_t>(2 * groupSize) )
-			{
-				auto first_begin = it;
-				auto second_begin = std::next(first_begin, groupSize);
-
-				T first_max = *std::max_element(first_begin, second_begin);
-				T second_max = *std::max_element(second_begin, std::next(second_begin, groupSize));
-				++_comparisons;
-
-				if ( first_max > second_max )
-					std::swap_ranges(first_begin, second_begin, second_begin);
-
-				std::advance(it, 2 * groupSize);
-			}
-
-			++_grouping;
-			sortPairs();
-		}
-		auto checkIfSorted() -> bool
-		{
-			auto it = _original.begin();
-			auto ite = _original.end();
-
-			if (it == ite)
-				throw (std::runtime_error("No values to sort"));
-
-			auto temp = (*it);
-
-			for (; it != ite; ++it )
-			{
-				if ( temp > (*it) )
-					return (_numbersSorted);
-				temp = (*it);
-			}
-			_numbersSorted = true;
-			return (_numbersSorted);
-		}
-
-	public:
-		PmergeMe() = delete;
-		PmergeMe( Container values ) : _numbersSorted(false), _grouping(0), _comparisons(0)
-		{
-			for ( auto& v : values )
-			{
-				_original.insert(_original.end(), v);
-				_sorted.insert(_sorted.end(), v);
-			}
-			checkIfSorted();
-		}
-		PmergeMe( const PmergeMe& ) = delete;
-		PmergeMe& operator=( const PmergeMe& ) = delete;
-		~PmergeMe() {}
-
-		auto getOriginal() const -> const Container& { return (_original); }
-		auto getSorted() const -> const Container& { return (_sorted); }
-		auto getTime() const -> const duration& { return (_time); }
-		auto getComparisons() const -> const size_t& { return (_comparisons); }
-
-		auto printBefore() const -> void
-		{
-			std::cout << "Before:";
-			printContainer(_original);
-		}
-		auto printAfter() const -> void
-		{
-			std::cout << "After:";
-			printContainer(_sorted);
-		}
-		auto printTime( const std::string& cType ) const -> void
-		{
-			std::cout << "Time to process a range of " << _sorted.size()
-			<< " elements with std::" << cType << " : " << _time << std::endl;
-		}
-		auto printComparisons() const -> void
-		{
-			std::cout << "Performed comparisons: " << _comparisons << std::endl;
-		}
-
-		auto launch() -> void
-		{
-			if (_numbersSorted)
-			{
-				std::cout << "Given numbers are already sorted." << std::endl;
-				return ;
-			}
 			const auto start = std::chrono::high_resolution_clock::now();
-			// TODO: Sort the numbers
-			// ----- TESTING --------
-			sortPairs();
-			// ----- ------- --------
+			mergeInsert(_sequence);
 			const auto end = std::chrono::high_resolution_clock::now();
 			_time = end - start;
-			_numbersSorted = true;
+		}
+
+		// Sorting
+		void	mergeInsert( Container& sequence )
+		{
+
 		}
 };
+
+std::string	args_to_string( int argc, char** argv );
