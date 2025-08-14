@@ -37,7 +37,7 @@ class PmergeMe
 			T					value;
 
 			while (sstream >> value)
-				original.insert(values.end(), value);
+				_sequence.insert(values.end(), value);
 			if (!sstream.eof())
 				throw (std::runtime_error("Error: failed to parse integral values"));
 		}
@@ -85,9 +85,10 @@ class PmergeMe
 		}
 
 		// Sorting
-		void	mergeInsert( Container& sequence )
+		void	mergeInsert( Container& seq )
 		{
-
+			// TODO: Need to create the same container but with std::pair<T, T> as the type
+			// This is required for the merge portion of the allgorithm
 		}
 };
 
