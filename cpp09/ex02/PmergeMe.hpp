@@ -9,7 +9,9 @@
 #include <sstream>
 #include <stdexcept>
 
-static constexpr size_t const PRINT_MAX = 5;
+// How many contained elements to print out.
+static constexpr bool			PRINT_LIMIT	= true;
+static constexpr size_t const	PRINT_MAX	= 5;
 
 /**
  * @brief Concept which checks (at compile time) that the container passed to us
@@ -35,40 +37,43 @@ requires iterable_container<T, Container>
 class PmergeMe
 {
 	private:
-		using duration	= std::chrono::duration<double, std::microx>;
+		// ---------------- Type definitions -----------
+		using duration	= std::chrono::duration<double, std::micro>;
 		using pair_type	= std::pair<T, T>;
 
+		// ---------------- Member variables -----------
 		Container<T>	_sequence;
 		duration		_time;
 
-		void containerize( const std::string& str )
+		// ---------------- Storage --------------------
+		void containerize( const std::string& values )
 		{
-			std::istringstream	sstream(str);
+			std::istringstream	sstream(values);
 			T					value;
 
 			while (sstream >> value)
-				_sequence.insert(values.end(), value);
+				_sequence.insert(_sequence.end(), value);
 			if (!sstream.eof())
 				throw (std::runtime_error("Error: failed to parse integral values"));
 		}
 
 	public:
-		// Rule of five
+		// ---------------- Rule of five ----------------
 		PmergeMe() = delete;
 		PmergeMe( const std::string& sequence )	{ containerize(sequence); }
 		PmergeMe( const PmergeMe& ) = delete;
 		PmergeMe& operator=( const PmergeMe& ) = delete;
 		~PmergeMe() {}
 
-		// Getters
+		// ---------------- Getters ---------------------
 		const Container&	getSequence()	const	{ return (_sequence); }
 		const duration&		getTime()		const	{ return (_time); }
 
-		// Helpers
-		void	printTime( const std::string& cType ) const
+		// ---------------- Helpers ---------------------
+		void	printTime( const std::string& containerType ) const
 		{
 			std::cout << "Time to process a range of " << _sorted.size()
-			<< " elements with std::" << cType << " : " << _time << std::endl;
+			<< " elements with std::" << containerType << " : " << _time << std::endl;
 		}
 
 		void	printContainer( const std::string& prefix ) const
@@ -76,13 +81,10 @@ class PmergeMe
 			std::cout << prefix;
 
 			auto it = _sequence.begin();
-			for (size_t idx = 0; idx < cont.size() && !(idx > PRINT_MAX) && it != _sequence.end(); ++idx, ++it)
-			{
-				if (idx < PRINT_MAX)
-					std::cout << ' ' << (*it);
-				else
-					std::cout << ' ' << "[...]";
-			}
+			for (size_t idx = 0; idx < cont.size() && (idx < PRINT_MAX && PRINT_LIMIT) && it != _sequence.end(); ++idx, ++it)
+				std::cout << ' ' << (*it);
+			if constexpr (PRINT_LIMIT)
+				std::cout << ' ' << "[...]";
 			std::cout << std::endl;
 		}
 
@@ -94,11 +96,10 @@ class PmergeMe
 			_time = end - start;
 		}
 
-		// Sorting
+		// ---------------- Sorting ---------------------
 		void	mergeInsert( Container& seq )
 		{
-			// TODO: Need to create the same container but with std::pair<T, T> as the type
-			// This is required for the merge portion of the allgorithm
+
 		}
 };
 
