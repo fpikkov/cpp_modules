@@ -1,8 +1,9 @@
 #include "PmergeMe.hpp"
 #include <list>
 
-static bool	vector_sort( std::string sequence );
-static bool	list_sort( std::string sequence );
+static std::string	args_to_string( int argc, char** argv );
+static bool			vector_sort( const std::string& input );
+static bool			list_sort( const std::string& input );
 
 int main( int argc, char** argv )
 {
@@ -19,18 +20,17 @@ int main( int argc, char** argv )
 	// Process
 	if (!vector_sort(inputString))
 		return (1);
-
 	if (!list_sort(inputString))
 		return (1);
 
 	return (0);
 }
 
-static bool	vector_sort( std::string sequence )
+static bool	vector_sort( const std::string& input )
 {
 	try
 	{
-		PmergeMe<int, std::vector<int>> pm(sequence);
+		PmergeMe<int, std::vector> pm(input);
 
 		pm.printContainer("Before:");
 		pm.launch();
@@ -45,11 +45,11 @@ static bool	vector_sort( std::string sequence )
 	return (true);
 }
 
-static bool	list_sort( std::string sequence )
+static bool	list_sort( const std::string& input )
 {
 	try
 	{
-		PmergeMe<int, std::list<int>> pm(sequence);
+		PmergeMe<int, std::list> pm(input);
 
 		pm.launch();
 		pm.printTime("list");
@@ -60,4 +60,17 @@ static bool	list_sort( std::string sequence )
 		return (false);
 	}
 	return (true);
+}
+
+static std::string	args_to_string( int argc, char** argv )
+{
+	std::string	temp;
+
+	for (int idx = 1; idx < argc; ++idx)
+	{
+		temp += ' ';
+		temp += argv[idx];
+	}
+
+	return (temp);
 }

@@ -2,7 +2,6 @@
 
 #include <chrono>
 #include <vector>
-#include <utility>
 #include <algorithm>
 #include <iostream>
 #include <iterator>
@@ -12,24 +11,35 @@
 
 static constexpr size_t const PRINT_MAX = 5;
 
-template <typename T>
-concept container = requires( T type )
+/**
+ * @brief Concept which checks (at compile time) that the container passed to us
+ * can be used properly in the sorting algorithm.
+ */
+template <typename T, template <typename...> class Container>
+concept iterable_container = requires
 {
-	typename T::value_type;
-	typename T::iterator;
-	{ type.begin() } -> std::input_iterator;
-	{ type.end() } -> std::input_iterator;
-	{ type.empty() } -> std::same_as<decltype(type.empty())>;
+	typename Container<T>::value_type;
+	typename Container<T>::iterator;
+
+	// Check if the container has an iterator
+	requires std::input_iterator<typename Container<T>::iterator>;
+
+	// Check without constructing the container that the functionality matches allowed containers
+	{ std::declval<Container<T>>().begin() }	-> std::same_as<typename Container<T>::iterator>;
+	{ std::declval<Container<T>>().end() }		-> std::same_as<typename Container<T>::iterator>;
+	{ std::declval<Container<T>>().empty() }	-> std::convertible_to<bool>;
 };
 
-template <std::integral T, container Container = std::vector<T>>
+template <std::integral T, template <typename...> class Container = std::vector>
+requires iterable_container<T, Container>
 class PmergeMe
 {
 	private:
-		using duration = std::chrono::duration<double, std::microx>;
+		using duration	= std::chrono::duration<double, std::microx>;
+		using pair_type	= std::pair<T, T>;
 
-		Container	_sequence;
-		duration	_time;
+		Container<T>	_sequence;
+		duration		_time;
 
 		void containerize( const std::string& str )
 		{
@@ -92,4 +102,4 @@ class PmergeMe
 		}
 };
 
-std::string	args_to_string( int argc, char** argv );
+

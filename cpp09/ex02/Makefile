@@ -13,7 +13,7 @@ NAME = PmergeMe
 BUILD = ${NAME}
 
 INCLUDES = PmergeMe.hpp
-SRCS = main.cpp PmergeMe.cpp
+SRCS = main.cpp
 
 OBJS = ${SRCS:.cpp=.o}
 
