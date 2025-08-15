@@ -100,10 +100,15 @@ class PmergeMe
 		}
 
 		// ---------------- Sorting ---------------------
-		// On entry the container may be the non-const reference to mainChain
+		// On entry the container may be the non-const reference to mainChain OR _sequence
 		void	mergeInsert( Container& seq )
 		{
-			// NOTE: Do I flush and construct a new 'seq' here?
+			/**
+			 * QUESTION: Between different levels of recursion:
+			 *           if 'seq' gets passed recursvely, does it mean that
+			 *           _sequence will always be modified at each level of recursion as
+			 *           _sequence was the initial argument
+			 */
 			if (seq.size() <= 1)
 				return ;
 
@@ -125,19 +130,26 @@ class PmergeMe
 				if constexpr (COMPARISON_COUNTER)
 					++_comparisons;
 
-				// NOTE: Do I pass the mainChain recursively or flush seq and reuse that?
+				// NOTE: I should pass 'mainChain' recursively otherwise we risk losing data from 'seq'
 				mainChain.push_back(lastPair.second);
 			}
 
 			/**
-			 * NOTE: The 'seq' container should be flushed but first we need to keep track
-			 * of the first elements in pairs but also any leftovers which become the pending chain.
+			 * TODO: Track first elements and leftovers in 'pending'
+			 *
+			 * In case of [10 10 9 7] where the mainChain ends up looking like [9 10] post-recursion,
+			 * you can track the original index of the value which endds up as first during recursion
+			 * AND return the value back to the layer above.
 			 */
+
 			// Recursive call (branching point)
 			mergeInsert(mainChain);
 
 			/**
 			 * NOTE: how should I track which pair ended up as the first one during recursion?
+			 * ANSWER: You can track the first pair by storing its index or value before recursion.
+			 *         For example, save the first element of 'mainChain' or 'pairs' before calling mergeInsert.
+			 *         If you need to know which pair was first after recursion, you may need to return that info from the recursive call.
 			 */
 
 			// Push the leftover element into pending after returning from recursion
