@@ -2,12 +2,12 @@
 
 #include <chrono>
 #include <vector>
-#include <algorithm>
 #include <iostream>
-#include <iterator>
 #include <concepts>
 #include <sstream>
 #include <stdexcept>
+
+#include "GroupIterator.hpp"
 
 // Constants
 static constexpr bool	const	COMPARISON_COUNTER	= true;
@@ -40,7 +40,6 @@ class PmergeMe
 	private:
 		// ---------------- Type definitions -----------
 		using duration	= std::chrono::duration<double, std::micro>;
-		using pair_type	= std::pair<T, T>;
 
 		// ---------------- Member variables -----------
 		Container<T>	_sequence;
@@ -100,15 +99,37 @@ class PmergeMe
 		}
 
 		// ---------------- Sorting ---------------------
+
+		template <typename Iterator>
+		void	mergeInsert( Iterator first, Iterator last )
+		{
+			// Return if no more pairs can be mmerged
+			size_t size = std::distance(first, last);
+			if ( size < 2 )
+				return ;
+
+			// Store the last iterator if size is odd
+			bool is_odd = size % 2;
+			Iterator leftover;
+			if ( is_odd )
+			{
+				leftover = last;
+				last = std::prev(last);
+			}
+
+			// Step 1: Form groupings then sort by the leading element
+
+
+
+
+		}
+
+
+
+/*
 		// On entry the container may be the non-const reference to mainChain OR _sequence
 		void	mergeInsert( Container& seq )
 		{
-			/**
-			 * QUESTION: Between different levels of recursion:
-			 *           if 'seq' gets passed recursvely, does it mean that
-			 *           _sequence will always be modified at each level of recursion as
-			 *           _sequence was the initial argument
-			 */
 			if (seq.size() <= 1)
 				return ;
 
@@ -134,28 +155,25 @@ class PmergeMe
 				mainChain.push_back(lastPair.second);
 			}
 
-			/**
-			 * TODO: Track first elements and leftovers in 'pending'
-			 *
-			 * In case of [10 10 9 7] where the mainChain ends up looking like [9 10] post-recursion,
-			 * you can track the original index of the value which endds up as first during recursion
-			 * AND return the value back to the layer above.
-			 */
+			// TODO: Track first elements and leftovers in 'pending'
+			//
+			// In case of [10 10 9 7] where the mainChain ends up looking like [9 10] post-recursion,
+			// you can track the original index of the value which endds up as first during recursion
+			// AND return the value back to the layer above.
 
 			// Recursive call (branching point)
 			mergeInsert(mainChain);
 
-			/**
-			 * NOTE: how should I track which pair ended up as the first one during recursion?
-			 * ANSWER: You can track the first pair by storing its index or value before recursion.
-			 *         For example, save the first element of 'mainChain' or 'pairs' before calling mergeInsert.
-			 *         If you need to know which pair was first after recursion, you may need to return that info from the recursive call.
-			 */
+			// NOTE: how should I track which pair ended up as the first one during recursion?
+			// ANSWER: You can track the first pair by storing its index or value before recursion.
+			//         For example, save the first element of 'mainChain' or 'pairs' before calling mergeInsert.
+			//         If you need to know which pair was first after recursion, you may need to return that info from the recursive call.
 
 			// Push the leftover element into pending after returning from recursion
 			if (seq.size() % 2)
 				pending.push_back(seq.back());
 		}
+		 */
 };
 
 

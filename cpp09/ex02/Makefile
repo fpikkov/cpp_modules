@@ -12,7 +12,7 @@ NAME = PmergeMe
 
 BUILD = ${NAME}
 
-INCLUDES = PmergeMe.hpp
+INCLUDES = PmergeMe.hpp GroupIterator.hpp
 SRCS = main.cpp
 
 OBJS = ${SRCS:.cpp=.o}
