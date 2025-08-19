@@ -3,16 +3,22 @@
 #include <iterator>
 #include <algorithm>
 
+/**
+ * @brief Groups a range of iterators which can then be used to compare the greatest elements from two groups.
+ * Comparisons are possible to be used on groups of different sizes so it is up to the user to make sure they are equal.
+ * @tparam Iterator The iterator type to be used.
+ * @author fpikkov
+ */
 template <typename Iterator>
 class GroupIterator
 {
 	public:
 		// Type definitions
-		using difference_type	= std::iterator_traits<Iterator>::difference_type;
 		using iterator_category	= std::random_access_iterator_tag;
-		using value_type		= std::iterator_traits<Iterator>::value_type;
-		using pointer			= std::iterator_traits<Iterator>::pointer;
-		using reference			= std::iterator_traits<Iterator>::reference;
+		using value_type		= typename std::iterator_traits<Iterator>::value_type;
+		using difference_type	= typename std::iterator_traits<Iterator>::difference_type;
+		using pointer			= typename std::iterator_traits<Iterator>::pointer;
+		using reference			= typename std::iterator_traits<Iterator>::reference;
 
 	private:
 		Iterator		_it;
@@ -62,8 +68,8 @@ class GroupIterator
 		}
 
 		// Dereference operators
-		reference	operator*()		const { return (*_it); }
-		pointer		operator->()	const { return (&(*_it)); }
+		reference		operator*()		const { return (*_it); }
+		pointer			operator->()	const { return (&(*_it)); }
 
 		// Increment/decrement operators
 		GroupIterator&	operator++()						{ _it += _size; return (*this); }
