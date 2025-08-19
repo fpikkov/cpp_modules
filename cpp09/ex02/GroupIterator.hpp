@@ -4,9 +4,11 @@
 #include <algorithm>
 
 /**
- * @brief Groups a range of iterators which can then be used to compare the greatest elements from two groups.
- * Comparisons are possible to be used on groups of different sizes so it is up to the user to make sure they are equal.
- * @tparam Iterator The iterator type to be used.
+ * @brief Groups a range of iterators.
+ * @details The class can be used to compare the greatest back elements from two groups.
+ * Comparisons are between groups of different sizes are valid, but can lead to unefined behavior.
+ * Any container size has to be casted into difference_type before class instantiation.
+ * @tparam Iterator The container's iterator type.
  * @author fpikkov
  */
 template <typename Iterator>
@@ -40,11 +42,11 @@ class GroupIterator
 		// Getters
 		Iterator		base()		const { return (_it); }
 		difference_type	size()		const { return (_size); }
-		reference		back()		const { return (*(_it + (size - 1))); }
-		Iterator		back_iter()	const { return (_it + (size - 1)); }
+		reference		back()		const { return (*(_it + (_size - 1))); }
+		Iterator		back_iter()	const { return (_it + (_size - 1)); }
 
 		// Resize current group
-		GroupIterator	resize( difference_type size ) const { return (GroupIterator(_it, _size * size)) }
+		GroupIterator	resize( difference_type size ) const { return (GroupIterator(_it, _size * size)); }
 		GroupIterator&	resize( difference_type size )       { _size *= size; return (*this); }
 
 		// Assignment operator overloads
@@ -95,4 +97,7 @@ class GroupIterator
 		bool			operator>=( const GroupIterator& other ) const { return (this->back() >= other.back()); }
 		bool			operator==( const GroupIterator& other ) const { return (this->back() == other.back()); }
 		bool			operator!=( const GroupIterator& other ) const { return (this->back() != other.back()); }
+
+		// TODO: range swapping operation either here or inside of PmergeMe
+		// overlapping ranges may be treated as undefined behavior (up to the end-user to prevent)
 };
