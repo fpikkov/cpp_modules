@@ -67,14 +67,14 @@ class PmergeMe
 		~PmergeMe() {}
 
 		// ---------------- Getters ---------------------
-		const Container&	getSequence()		const	{ return (_sequence); }
+		const Container<T>&	getSequence()		const	{ return (_sequence); }
 		const duration&		getTime()			const	{ return (_time); }
 		size_t				getComparisons()	const	{ return (_comparisons); }
 
 		// ---------------- Helpers ---------------------
 		void	printTime( const std::string& containerType ) const
 		{
-			std::cout << "Time to process a range of " << _sorted.size()
+			std::cout << "Time to process a range of " << _sequence.size()
 			<< " elements with std::" << containerType << " : " << _time << std::endl;
 		}
 
@@ -83,7 +83,7 @@ class PmergeMe
 			std::cout << prefix;
 
 			auto it = _sequence.begin();
-			for (size_t idx = 0; idx < cont.size() && (idx < PRINT_MAX && PRINT_LIMIT) && it != _sequence.end(); ++idx, ++it)
+			for (size_t idx = 0; idx < _sequence.size() && (idx < PRINT_MAX && PRINT_LIMIT) && it != _sequence.end(); ++idx, ++it)
 				std::cout << ' ' << (*it);
 			if constexpr (PRINT_LIMIT)
 				std::cout << ' ' << "[...]";
@@ -92,7 +92,7 @@ class PmergeMe
 
 		void	launch()
 		{
-			using Group = GroupIterator<Container<T>::iterator>;
+			using Group = GroupIterator<typename Container<T>::iterator>;
 			const auto start = std::chrono::high_resolution_clock::now();
 			mergeInsert( Group(_sequence.begin(), 1),
 						 Group(_sequence.end(), 1) );
@@ -101,7 +101,7 @@ class PmergeMe
 		}
 
 		// ---------------- Sorting ---------------------
-		template <typename Iterator = GroupIterator<Container<T>::iterator>>
+		template <typename Iterator = GroupIterator<typename Container<T>::iterator>>
 		void	mergeInsert( Iterator first, Iterator last )
 		{
 			// Return if no more pairs can be formed
@@ -114,7 +114,7 @@ class PmergeMe
 			Iterator end = is_odd ? std::prev(last) : last;
 
 			// Step 1: Form groups then sort by the leading element
-			for ( auto current = first; current.base() < end.end(); std::advance(current, current.size()) )
+			for ( auto current = first; current.base() != end.end(); std::advance(current, current.size()) )
 			{
 				auto next = std::next(current);
 				if constexpr (COMPARISON_COUNTER)
@@ -122,7 +122,10 @@ class PmergeMe
 				if ( current > next )
 					current.swap_group(next);
 			}
-			// NOTE: Before recursion resize the 
+			// NOTE: Before recursion expand the first and last iterators.
+			mergeInsert(first.expand(2), end.expand(2));
+			// NOTE: May have to shrink the same iterators after returning unless
+			// creating new instances for recursion.
 
 
 		}
