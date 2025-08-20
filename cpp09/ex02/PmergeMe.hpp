@@ -92,88 +92,40 @@ class PmergeMe
 
 		void	launch()
 		{
+			using Group = GroupIterator<Container<T>::iterator>;
 			const auto start = std::chrono::high_resolution_clock::now();
-			mergeInsert(_sequence);
+			mergeInsert( Group(_sequence.begin(), 1),
+						 Group(_sequence.end(), 1) );
 			const auto end = std::chrono::high_resolution_clock::now();
 			_time = end - start;
 		}
 
 		// ---------------- Sorting ---------------------
-
-		template <typename Iterator>
+		template <typename Iterator = GroupIterator<Container<T>::iterator>>
 		void	mergeInsert( Iterator first, Iterator last )
 		{
-			// Return if no more pairs can be mmerged
+			// Return if no more pairs can be formed
 			size_t size = std::distance(first, last);
 			if ( size < 2 )
 				return ;
 
-			// Store the last iterator if size is odd
+			// Last group will not be formed if the current sequence is odd
 			bool is_odd = size % 2;
-			Iterator leftover;
-			if ( is_odd )
+			Iterator end = is_odd ? std::prev(last) : last;
+
+			// Step 1: Form groups then sort by the leading element
+			for ( auto current = first; current.base() < end.end(); std::advance(current, current.size()) )
 			{
-				leftover = last;
-				last = std::prev(last);
-			}
-
-			// Step 1: Form groupings then sort by the leading element
-
-
-
-
-		}
-
-
-
-/*
-		// On entry the container may be the non-const reference to mainChain OR _sequence
-		void	mergeInsert( Container& seq )
-		{
-			if (seq.size() <= 1)
-				return ;
-
-			Container<T>			mainChain;
-			Container<T>			pending;
-			Container<pair_type>	pairs;
-
-			// Make pairs out of sequence
-			for ( auto it : seq )
-			{
-				auto itx = std::next(it);
-				if ( itx == seq.end() )
-					break ;
-				// Compare and swap positions so first < second
-				pairs.push_back(std::make_pair(*it, *itx));
-				auto lastPair = pairs.back();
-				if (lastPair.first > lastPair.second)
-					std::swap(lastPair.first, lastPair.second);
+				auto next = std::next(current);
 				if constexpr (COMPARISON_COUNTER)
 					++_comparisons;
-
-				// NOTE: I should pass 'mainChain' recursively otherwise we risk losing data from 'seq'
-				mainChain.push_back(lastPair.second);
+				if ( current > next )
+					current.swap_group(next);
 			}
+			// NOTE: Before recursion resize the 
 
-			// TODO: Track first elements and leftovers in 'pending'
-			//
-			// In case of [10 10 9 7] where the mainChain ends up looking like [9 10] post-recursion,
-			// you can track the original index of the value which endds up as first during recursion
-			// AND return the value back to the layer above.
 
-			// Recursive call (branching point)
-			mergeInsert(mainChain);
-
-			// NOTE: how should I track which pair ended up as the first one during recursion?
-			// ANSWER: You can track the first pair by storing its index or value before recursion.
-			//         For example, save the first element of 'mainChain' or 'pairs' before calling mergeInsert.
-			//         If you need to know which pair was first after recursion, you may need to return that info from the recursive call.
-
-			// Push the leftover element into pending after returning from recursion
-			if (seq.size() % 2)
-				pending.push_back(seq.back());
 		}
-		 */
 };
 
 
