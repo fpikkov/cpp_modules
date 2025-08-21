@@ -76,6 +76,8 @@ class PmergeMe
 		{
 			std::cout << "Time to process a range of " << _sequence.size()
 			<< " elements with std::" << containerType << " : " << _time << std::endl;
+			if constexpr (COMPARISON_COUNTER)
+				std::cout << "Comparisons: " << _comparisons << std::endl;
 		}
 
 		void	printContainer( const std::string& prefix ) const
@@ -85,7 +87,7 @@ class PmergeMe
 			auto it = _sequence.begin();
 			for (size_t idx = 0; idx < _sequence.size() && (idx < PRINT_MAX && PRINT_LIMIT) && it != _sequence.end(); ++idx, ++it)
 				std::cout << ' ' << (*it);
-			if constexpr (PRINT_LIMIT)
+			if (PRINT_LIMIT && PRINT_MAX < _sequence.size())
 				std::cout << ' ' << "[...]";
 			std::cout << std::endl;
 		}
@@ -114,7 +116,7 @@ class PmergeMe
 			Iterator end = is_odd ? std::prev(last) : last;
 
 			// Step 1: Form groups then sort by the leading element
-			for ( auto current = first; current.base() != end.end(); std::advance(current, current.size()) )
+			for ( auto current = first; current.base() != end.base(); current += 2 )
 			{
 				auto next = std::next(current);
 				if constexpr (COMPARISON_COUNTER)

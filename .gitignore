@@ -35,3 +35,6 @@
 .vscode/
 *.csv
 *.txt
+
+# Executables
+PmergeMe
