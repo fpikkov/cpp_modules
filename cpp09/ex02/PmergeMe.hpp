@@ -107,13 +107,13 @@ class PmergeMe
 		void	mergeInsert( Iterator first, Iterator last )
 		{
 			// Return if no more pairs can be formed
-			size_t size = std::distance(first, last);
+			size_t size	= std::distance(first, last);
 			if ( size < 2 )
 				return ;
 
 			// Last group will not be formed if the current sequence is odd
-			bool is_odd = size % 2;
-			Iterator end = is_odd ? std::prev(last) : last;
+			bool is_odd		= size % 2;
+			Iterator end	= is_odd ? std::prev(last) : last;
 
 			// Step 1: Form groups then sort by the leading element
 			for ( auto current = first; current.base() != end.base(); current += 2 )
@@ -124,7 +124,7 @@ class PmergeMe
 				if ( current > next )
 					current.swap_group(next);
 			}
-			// NOTE: Before recursion expand the first and last iterators.
+			// Each group size doubles with a recursive call
 			mergeInsert(first.expand(2), end.expand(2));
 			// NOTE: May have to shrink the same iterators after returning unless
 			// creating new instances for recursion.

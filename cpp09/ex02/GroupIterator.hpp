@@ -11,14 +11,14 @@
  * Any container size has to be casted into difference_type before class instantiation.
  * Subscript operator will return the element at the back of the group with an offset from the current group.
  *
- * @tparam Iterator The container's iterator type.
+ * @tparam Iterator The container's iterator type. Only forward iterators and supersets of it are supported.
  */
-template <typename Iterator>
+template <std::forward_iterator Iterator>
 class GroupIterator
 {
 	public:
 		// Type definitions
-		using iterator_category	= std::random_access_iterator_tag;
+		using iterator_category	= typename std::iterator_traits<Iterator>::iterator_category;
 		using value_type		= typename std::iterator_traits<Iterator>::value_type;
 		using difference_type	= typename std::iterator_traits<Iterator>::difference_type;
 		using pointer			= typename std::iterator_traits<Iterator>::pointer;
@@ -27,6 +27,8 @@ class GroupIterator
 	private:
 		Iterator		_it;
 		difference_type	_size;
+
+		constexpr const bool _is_bidirectional = std::is_base_of_v<std::bidirectional_iterator_tag, iterator_category>;
 
 	public:
 		// Constructors
@@ -44,9 +46,9 @@ class GroupIterator
 		// Getters
 		Iterator		base		( void )						const	{ return (_it); }
 		difference_type	size		( void )						const	{ return (_size); }
-		reference		back		( void )						const	{ Iterator temp = _it; std::advance(temp, _size - 1); return (*temp); }
-		Iterator		back_iter	( void )						const	{ Iterator temp = _it; std::advance(temp, _size - 1); return (temp); }
-		Iterator		end			( void )						const	{ Iterator temp = _it; std::advance(temp, _size); return (temp); }
+		reference		back		( void )						const;
+		Iterator		back_iter	( void )						const;
+		Iterator		end			( void )						const;
 
 		// Size manipulation
 		GroupIterator	resize		( difference_type size )		const	{ return (GroupIterator(_it, (size > 0 ? size : 1))); }
@@ -59,52 +61,32 @@ class GroupIterator
 		GroupIterator&	shrink		( difference_type size )				{ _size /= (size > 0 ? size : 1); return (*this); }
 
 		// Swap groups
-		GroupIterator	swap_group	( GroupIterator& other )
-		{
-			std::swap_ranges(this->base(), this->end(), other.base());
-			return ( GroupIterator(other.end(), other.size()) );
-		}
+		GroupIterator	swap_group	( GroupIterator& other );
 
 		// Assignment operator overloads
-		GroupIterator&	operator=	( const GroupIterator& other )
-		{
-			if ( this != &other )
-			{
-				_it		= other._it;
-				_size	= other._size;
-			}
-			return (*this);
-		}
-		GroupIterator&	operator=	( GroupIterator&& other )
-		{
-			if ( this != &other )
-			{
-				_it		= std::move(other._it);
-				_size	= other._size;
-			}
-			return (*this);
-		}
+		GroupIterator&	operator=	( const GroupIterator& other );
+		GroupIterator&	operator=	( GroupIterator&& other );
 
 		// Dereference operators
 		reference		operator*	( void )						const	{ return (*_it); }
 		pointer			operator->	( void )						const	{ return (&(*_it)); }
 
 		// Increment/decrement operators
-		GroupIterator&	operator++	( void )								{ std::advance(_it, _size); return (*this); }
-		GroupIterator	operator++	( int )									{ GroupIterator temp = _it; std::advance(_it, _size); return (temp); }
-		GroupIterator&	operator--	( void )								{ std::advance(_it, -_size); return (*this); }
-		GroupIterator	operator--	( int )									{ GroupIterator temp = _it; std::advance(_it, -_size); return (temp); }
-		GroupIterator&	operator+=	( difference_type dist )				{ std::advance(_it, _size * dist); return (*this); }
-		GroupIterator&	operator-=	( difference_type dist )				{ std::advance(_it, -(_size * dist)); return (*this); }
+		GroupIterator&	operator++	( void );
+		GroupIterator	operator++	( int );
+		GroupIterator&	operator--	( void );
+		GroupIterator	operator--	( int );
+		GroupIterator&	operator+=	( difference_type dist );
+		GroupIterator&	operator-=	( difference_type dist );
 
 		// Arithmetic operators
-		GroupIterator	operator+	( difference_type dist )		const	{ Iterator temp = _it; std::advance(temp, _size * dist); return (GroupIterator(temp, _size)); }
-		GroupIterator	operator-	( difference_type dist )		const	{ Iterator temp = _it; std::advance(temp, -(_size * dist)); return (GroupIterator(temp, _size)); }
-		difference_type	operator-	( const GroupIterator& other )	const	{ return (std::distance(other._it, _it) / _size); }
+		GroupIterator	operator+	( difference_type dist )		const;
+		GroupIterator	operator-	( difference_type dist )		const;
+		difference_type	operator-	( const GroupIterator& other )	const;
 
 		// Subscript operators
-		reference		operator[]	( difference_type offset )				{ Iterator temp = _it; std::advance(temp, (_size * offset) + (_size - 1)); return (*temp); }
-		const reference	operator[]	( difference_type offset )		const	{ Iterator temp = _it; std::advance(temp, (_size * offset) + (_size - 1)); return (*temp); }
+		reference		operator[]	( difference_type offset );
+		const reference	operator[]	( difference_type offset )		const;
 
 		// Comparison operators
 		bool			operator<	( const GroupIterator& other )	const	{ return (this->back() < other.back()); }
@@ -114,3 +96,5 @@ class GroupIterator
 		bool			operator==	( const GroupIterator& other )	const	{ return (this->back() == other.back()); }
 		bool			operator!=	( const GroupIterator& other )	const	{ return (this->back() != other.back()); }
 };
+
+#include "GroupIterator.tpp"
