@@ -51,7 +51,7 @@ class PmergeMe
 		struct PendingGroup
 		{
 			GroupIt	follower;
-			MainIt	upperBound;
+			MainIt	upperLimit;
 		};
 
 		// ---------------- Storage --------------------
@@ -171,6 +171,27 @@ class PmergeMe
 			// If leftover exists, append it to the pending chain
 			if ( is_odd )
 				pending.emplace(pending.end(), end, main.end());
+
+			using p_size = typename Container<PendingGroup<Iterator>>::size_type;
+			for ( unsigned int i = 0;; ++i )
+			{
+				unsigned long current = specialOrder(i);
+				if ( static_cast<p_size>(current) >= pending.size() )
+					break ;
+
+				// Insert 'current' ammount of elements into main
+				for ( ; current > 0; --current )
+				{
+					auto element = std::next(pending.begin(), current - 1);
+
+					// Insert into the main using binary search
+					auto pos = std::upper_bound(main.begin(), element->upperLimit, element->follower);
+					main.insert(pos, element->follower);
+
+					pending.erase(element);
+				}
+			}
+			// TODO: Deal with inserting the elements which weren't included in the Jacobsthal order
 
 			// If pending is empty, skip to restructuring the original sequence
 
