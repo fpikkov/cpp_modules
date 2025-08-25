@@ -11,7 +11,7 @@
 
 // Constants
 static constexpr bool	const	COMPARISON_COUNTER	= true;
-static constexpr bool	const	PRINT_LIMIT			= true;
+static constexpr bool	const	PRINT_LIMIT			= false;
 static constexpr size_t const	PRINT_MAX			= 5;
 
 /**
@@ -85,10 +85,15 @@ class PmergeMe
 			std::cout << prefix;
 
 			auto it = _sequence.begin();
-			for (size_t idx = 0; idx < _sequence.size() && (idx < PRINT_MAX && PRINT_LIMIT) && it != _sequence.end(); ++idx, ++it)
+			for (size_t idx = 0; idx < _sequence.size() && it != _sequence.end(); ++idx, ++it)
+			{
+				if (idx >= PRINT_MAX && PRINT_LIMIT)
+				{
+					std::cout << ' ' << "[...]";
+					break ;
+				}
 				std::cout << ' ' << (*it);
-			if (PRINT_LIMIT && PRINT_MAX < _sequence.size())
-				std::cout << ' ' << "[...]";
+			}
 			std::cout << std::endl;
 		}
 

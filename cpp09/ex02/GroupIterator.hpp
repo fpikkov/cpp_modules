@@ -28,7 +28,7 @@ class GroupIterator
 		Iterator		_it;
 		difference_type	_size;
 
-		constexpr const bool _is_bidirectional = std::is_base_of_v<std::bidirectional_iterator_tag, iterator_category>;
+		static constexpr const bool _is_bidirectional = std::is_base_of_v<std::bidirectional_iterator_tag, iterator_category>;
 
 	public:
 		// Constructors
