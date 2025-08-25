@@ -46,6 +46,14 @@ class PmergeMe
 		duration		_time;
 		size_t			_comparisons;
 
+		// ---------------- Member struct --------------
+		template <typename GroupIt, typename MainIt = typename Container<GroupIt>::iterator>
+		struct PendingGroup
+		{
+			GroupIt	follower;
+			MainIt	upperBound;
+		};
+
 		// ---------------- Storage --------------------
 		void containerize( const std::string& values )
 		{
@@ -56,6 +64,19 @@ class PmergeMe
 				_sequence.insert(_sequence.end(), value);
 			if (!sstream.eof())
 				throw (std::runtime_error("Error: failed to parse integral values"));
+		}
+
+		// ---------------- Jacobsthal -----------------
+		static unsigned long	jacobsthal( unsigned long n )
+		{
+			if ( n <= 1 )
+				return (n);
+			return (jacobsthal(n - 1) + (2 * jacobsthal(n - 2)));
+		}
+
+		static unsigned long	specialOrder( unsigned int index )
+		{
+			return (jacobsthal(index + 3) - jacobsthal(index + 2));
 		}
 
 	public:
@@ -129,10 +150,36 @@ class PmergeMe
 				if ( current > next )
 					current.swap_group(next);
 			}
-			// Each group size doubles with a recursive call
+			// Double up the size and recursively sort the groups in an ascending order.
 			mergeInsert(first.expand(2), end.expand(2));
-			// NOTE: May have to shrink the same iterators after returning unless
-			// creating new instances for recursion.
+
+			// Step 2: Create the main and pending chains
+			Container<Iterator>					main;
+			Container<PendingGroup<Iterator>>	pending;
+
+			// Insert first follower and leader into the main chain
+			main.insert(main.end(), first);
+			main.insert(main.end(), std::next(first));
+
+			// Insert the remaining leaders into the main chain and followers into pending
+			for ( auto current = first + 2; current.base() != end.base(); current +=2 )
+			{
+				auto upper = main.insert(main.end(), std::next(current));
+				pending.emplace(pending.end(), current, upper);
+			}
+
+			// If leftover exists, append it to the pending chain
+			if ( is_odd )
+				pending.emplace(pending.end(), end, main.end());
+
+			// If pending is empty, skip to restructuring the original sequence
+
+			// QUESTION: How do we figure out which jacobsthal number we should use during the current recurison level?
+
+			// During insertion the whole group gets placed somewhere before the upper bound.
+
+			// Whenever returning from recursion, we need to restructure the original iterator order.
+			// Due to the nature of recursive insertion, this will reflect a partially sorted sequence in the escaped recursive level.
 
 
 		}
