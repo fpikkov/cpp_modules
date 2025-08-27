@@ -98,7 +98,7 @@ template <std::forward_iterator Iterator>
 GroupIterator<Iterator>
 GroupIterator<Iterator>::operator++( int )
 {
-	GroupIterator temp = _it;
+	GroupIterator temp = *this;
 	std::advance(_it, _size);
 	return (temp);
 }
@@ -132,7 +132,7 @@ GroupIterator<Iterator>::operator--( int )
 {
 	if constexpr (_is_bidirectional)
 	{
-		GroupIterator temp = _it;
+		GroupIterator temp = *this;
 		std::advance(_it, -_size);
 		return (temp);
 	}

@@ -45,7 +45,6 @@ static bool	vector_sort( const std::string& input )
 	return (true);
 }
 
-
 static bool	list_sort( const std::string& input )
 {
 	try

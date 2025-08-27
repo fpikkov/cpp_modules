@@ -39,7 +39,9 @@ class PmergeMe
 {
 	private:
 		// ---------------- Type definitions -----------
-		using duration	= std::chrono::duration<double, std::micro>;
+		using duration			= std::chrono::duration<double, std::micro>;
+		using size_type			= typename Container<GroupIterator<typename Container<T>::iterator>>::size_type;
+		using difference_type	= typename Container<GroupIterator<typename Container<T>::iterator>>::difference_type;
 
 		// ---------------- Member variables -----------
 		Container<T>	_sequence;
@@ -67,17 +69,9 @@ class PmergeMe
 		}
 
 		// ---------------- Jacobsthal -----------------
-		static unsigned long	jacobsthal( unsigned long n )
-		{
-			if ( n <= 1 )
-				return (n);
-			return (jacobsthal(n - 1) + (2 * jacobsthal(n - 2)));
-		}
+		static size_type	jacobsthalNGen( size_type n )		{ return (n <= 1 ? n : (jacobsthalNGen(n - 1) + (2 * jacobsthalNGen(n - 2)))); }
 
-		static unsigned long	specialOrder( unsigned int index )
-		{
-			return (jacobsthal(index + 3) - jacobsthal(index + 2));
-		}
+		static size_type	jacobsthal( size_type index )	{ return (jacobsthalNGen(index + 3) - jacobsthalNGen(index + 2)); }
 
 	public:
 		// ---------------- Rule of five ----------------
@@ -133,7 +127,7 @@ class PmergeMe
 		void	mergeInsert( Iterator first, Iterator last )
 		{
 			// Return if no more pairs can be formed
-			size_t size	= std::distance(first, last);
+			size_type size	= std::distance(first, last);
 			if ( size < 2 )
 				return ;
 
@@ -142,7 +136,7 @@ class PmergeMe
 			Iterator end	= is_odd ? std::prev(last) : last;
 
 			// Step 1: Form groups then sort by the leading element
-			for ( auto current = first; current.base() != end.base(); current += 2 )
+			for ( auto current = first; std::distance(current, end) > 0; current += 2 )
 			{
 				auto next = std::next(current);
 				if constexpr (COMPARISON_COUNTER)
@@ -162,47 +156,73 @@ class PmergeMe
 			main.insert(main.end(), std::next(first));
 
 			// Insert the remaining leaders into the main chain and followers into pending
-			for ( auto current = first + 2; current.base() != end.base(); current +=2 )
+			for ( auto current = first + 2; std::distance(current, end) > 0; current += 2 )
 			{
 				auto upper = main.insert(main.end(), std::next(current));
 				pending.emplace(pending.end(), current, upper);
 			}
 
-			// If leftover exists, append it to the pending chain
-			if ( is_odd )
-				pending.emplace(pending.end(), end, main.end());
-
-			using p_size = typename Container<PendingGroup<Iterator>>::size_type;
-			for ( unsigned int i = 0;; ++i )
+			// Step 3: Insertion
+			for ( size_type index = 0;; ++index )
 			{
-				unsigned long current = specialOrder(i);
-				if ( static_cast<p_size>(current) >= pending.size() )
+				size_type current = jacobsthal(index);
+				if ( current > pending.size() )
 					break ;
 
 				// Insert 'current' ammount of elements into main
 				for ( ; current > 0; --current )
 				{
-					auto element = std::next(pending.begin(), current - 1);
+					auto element = std::next(pending.begin(), static_cast<difference_type>(current - 1));
 
 					// Insert into the main using binary search
-					auto pos = std::upper_bound(main.begin(), element->upperLimit, element->follower);
+					auto pos = std::upper_bound(main.begin(), element->upperLimit, element->follower,
+						[this]( const auto& lhs, const auto& rhs )
+						{
+							if constexpr (COMPARISON_COUNTER)
+								++_comparisons;
+							return (lhs < rhs);
+						});
 					main.insert(pos, element->follower);
-
 					pending.erase(element);
 				}
 			}
-			// TODO: Deal with inserting the elements which weren't included in the Jacobsthal order
 
-			// If pending is empty, skip to restructuring the original sequence
+			// Insert elements which when weren't inserted with jacobsthal's ordering
+			while ( !pending.empty() )
+			{
+				auto element = std::next(pending.begin(), static_cast<difference_type>(pending.size() - 1));
 
-			// QUESTION: How do we figure out which jacobsthal number we should use during the current recurison level?
+				auto pos = std::upper_bound(main.begin(), element->upperLimit, element->follower,
+					[this]( const auto& lhs, const auto& rhs )
+					{
+						if constexpr (COMPARISON_COUNTER)
+							++_comparisons;
+						return (lhs < rhs);
+					});
+				main.insert(pos, element->follower);
+				pending.erase(element);
+			}
 
-			// During insertion the whole group gets placed somewhere before the upper bound.
+			// Iterator invalidation prevents the inclusion of leftovers into the pending chain
+			if ( is_odd )
+			{
+				auto pos = std::upper_bound(main.begin(), main.end(), end,
+					[this]( const auto& lhs, const auto& rhs )
+					{
+						if constexpr (COMPARISON_COUNTER)
+							++_comparisons;
+						return (lhs < rhs);
+					});
+				main.insert(pos, end);
+			}
 
-			// Whenever returning from recursion, we need to restructure the original iterator order.
-			// Due to the nature of recursive insertion, this will reflect a partially sorted sequence in the escaped recursive level.
-
-
+			// Step 4: Update the sequence
+			Container<T> temp;
+			for ( const auto& group : main )
+			{
+				std::move(group.base(), group.end(), std::inserter(temp, temp.end()));
+			}
+			std::move(temp.begin(), temp.end(), first.base());
 		}
 };
 

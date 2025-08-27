@@ -52,13 +52,8 @@ class GroupIterator
 
 		// Size manipulation
 		GroupIterator	resize		( difference_type size )		const	{ return (GroupIterator(_it, (size > 0 ? size : 1))); }
-		GroupIterator&	resize		( difference_type size )				{ _size = (size > 0 ? size : 1); return (*this); }
-
 		GroupIterator	expand		( difference_type size )		const	{ return (GroupIterator(_it, _size * (size > 0 ? size : 1))); }
-		GroupIterator&	expand		( difference_type size )				{ _size *= (size > 0 ? size : 1); return (*this); }
-
 		GroupIterator	shrink		( difference_type size )		const	{ return (GroupIterator(_it, _size / (size > 0 ? size : 1))); }
-		GroupIterator&	shrink		( difference_type size )				{ _size /= (size > 0 ? size : 1); return (*this); }
 
 		// Swap groups
 		GroupIterator	swap_group	( GroupIterator& other );
@@ -68,8 +63,8 @@ class GroupIterator
 		GroupIterator&	operator=	( GroupIterator&& other );
 
 		// Dereference operators
-		reference		operator*	( void )						const	{ return (*_it); }
-		pointer			operator->	( void )						const	{ return (&(*_it)); }
+		reference		operator*	( void )						const	{ return (this->back()); }
+		pointer			operator->	( void )						const	{ return (&(this->back())); }
 
 		// Increment/decrement operators
 		GroupIterator&	operator++	( void );
