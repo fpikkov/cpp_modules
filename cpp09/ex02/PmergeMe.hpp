@@ -69,9 +69,9 @@ class PmergeMe
 		}
 
 		// ---------------- Jacobsthal -----------------
-		static size_type	jacobsthalNGen( size_type n )		{ return (n <= 1 ? n : (jacobsthalNGen(n - 1) + (2 * jacobsthalNGen(n - 2)))); }
+		static size_type	jacobsthalGen( size_type n )		{ return (n <= 1 ? n : (jacobsthalGen(n - 1) + (2 * jacobsthalGen(n - 2)))); }
 
-		static size_type	jacobsthal( size_type index )	{ return (jacobsthalNGen(index + 3) - jacobsthalNGen(index + 2)); }
+		static size_type	jacobsthal( size_type index )	{ return (jacobsthalGen(index + 3) - jacobsthalGen(index + 2)); }
 
 	public:
 		// ---------------- Rule of five ----------------
@@ -122,6 +122,8 @@ class PmergeMe
 			_time = end - start;
 		}
 
+		//NOTE: DEBUG
+		int recursionLevel = 0;
 		// ---------------- Sorting ---------------------
 		template <typename Iterator = GroupIterator<typename Container<T>::iterator>>
 		void	mergeInsert( Iterator first, Iterator last )
@@ -129,7 +131,11 @@ class PmergeMe
 			// Return if no more pairs can be formed
 			size_type size	= std::distance(first, last);
 			if ( size < 2 )
+			{
+				//NOTE: DEBUG
+				--recursionLevel;
 				return ;
+			}
 
 			// Last group will not be formed if the current sequence is odd
 			bool is_odd		= size % 2;
@@ -144,6 +150,8 @@ class PmergeMe
 				if ( current > next )
 					current.swap_group(next);
 			}
+			//NOTE: DEBUG
+			++recursionLevel;
 			// Double up the size and recursively sort the groups in an ascending order.
 			mergeInsert(first.expand(2), end.expand(2));
 
@@ -216,6 +224,19 @@ class PmergeMe
 				main.insert(pos, end);
 			}
 
+			//NOTE: DEBUG
+			std::cout << "Recursion level " << recursionLevel << " main: ";
+			for (auto group : main)
+			{
+				std::cout << "| ";
+				std::for_each(group.base(), group.end(),
+				[](const auto& ch)
+				{
+					std::cout << ch << " ";
+				});
+			}
+			std::cout << "\n";
+
 			// Step 4: Update the sequence
 			Container<T> temp;
 			for ( const auto& group : main )
@@ -223,6 +244,8 @@ class PmergeMe
 				std::move(group.base(), group.end(), std::inserter(temp, temp.end()));
 			}
 			std::move(temp.begin(), temp.end(), first.base());
+			//NOTE: DEBUG
+			--recursionLevel;
 		}
 };
 

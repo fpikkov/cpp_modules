@@ -20,8 +20,8 @@ int main( int argc, char** argv )
 	// Process
 	if (!vector_sort(inputString))
 		return (1);
-	if (!list_sort(inputString))
-		return (1);
+	//if (!list_sort(inputString))
+	//	return (1);
 
 	return (0);
 }
@@ -45,6 +45,7 @@ static bool	vector_sort( const std::string& input )
 	return (true);
 }
 
+[[maybe_unused]]
 static bool	list_sort( const std::string& input )
 {
 	try
