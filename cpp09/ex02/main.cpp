@@ -20,8 +20,8 @@ int main( int argc, char** argv )
 	// Process
 	if (!vector_sort(inputString))
 		return (1);
-	//if (!list_sort(inputString))
-	//	return (1);
+	if (!list_sort(inputString))
+		return (1);
 
 	return (0);
 }
@@ -34,7 +34,8 @@ static bool	vector_sort( const std::string& input )
 
 		pm.printContainer("Before:");
 		pm.launch();
-		pm.printContainer("After:");
+		//pm.printContainer("After:");
+		pm.printContainer("After vector:");
 		pm.printTime("vector");
 	}
 	catch(const std::exception& e)
@@ -54,6 +55,7 @@ static bool	list_sort( const std::string& input )
 
 		pm.launch();
 		pm.printTime("list");
+		pm.printContainer("After list: ");
 	}
 	catch(const std::exception& e)
 	{

@@ -33,6 +33,28 @@ concept iterable_container = requires
 	{ std::declval<Container<T>>().empty() }	-> std::convertible_to<bool>;
 };
 
+/**
+ * @brief Concept checks if we can reserve space within the container.
+ */
+template <typename T, template <typename...> class Container>
+concept has_reserve = requires
+{
+	typename Container<T>::size_type;
+
+	{ std::declval<Container<T>>().reserve(std::declval<typename Container<T>::size_type>()) } -> std::same_as<void>;
+};
+
+/**
+ * @brief Concept checks if we can push or emplace elements to the back with the given container.
+ */
+template <typename T, template <typename...> class Container>
+concept has_push_back = requires
+{
+	typename Container<T>::value_type;
+
+	{ std::declval<Container<T>>().push_back(std::declval<typename Container<T>::value_type>()) } -> std::same_as<void>;
+};
+
 template <std::integral T, template <typename...> class Container = std::vector>
 requires iterable_container<T, Container>
 class PmergeMe
@@ -48,14 +70,6 @@ class PmergeMe
 		duration		_time;
 		size_t			_comparisons;
 
-		// ---------------- Member struct --------------
-		template <typename GroupIt, typename MainIt = typename Container<GroupIt>::iterator>
-		struct PendingGroup
-		{
-			GroupIt	follower;
-			MainIt	upperLimit;
-		};
-
 		// ---------------- Storage --------------------
 		void containerize( const std::string& values )
 		{
@@ -70,7 +84,6 @@ class PmergeMe
 
 		// ---------------- Jacobsthal -----------------
 		static size_type	jacobsthalGen( size_type n )		{ return (n <= 1 ? n : (jacobsthalGen(n - 1) + (2 * jacobsthalGen(n - 2)))); }
-
 		static size_type	jacobsthal( size_type index )	{ return (jacobsthalGen(index + 3) - jacobsthalGen(index + 2)); }
 
 	public:
@@ -122,8 +135,6 @@ class PmergeMe
 			_time = end - start;
 		}
 
-		//NOTE: DEBUG
-		int recursionLevel = 0;
 		// ---------------- Sorting ---------------------
 		template <typename Iterator = GroupIterator<typename Container<T>::iterator>>
 		void	mergeInsert( Iterator first, Iterator last )
@@ -131,11 +142,7 @@ class PmergeMe
 			// Return if no more pairs can be formed
 			size_type size	= std::distance(first, last);
 			if ( size < 2 )
-			{
-				//NOTE: DEBUG
-				--recursionLevel;
 				return ;
-			}
 
 			// Last group will not be formed if the current sequence is odd
 			bool is_odd		= size % 2;
@@ -150,92 +157,114 @@ class PmergeMe
 				if ( current > next )
 					current.swap_group(next);
 			}
-			//NOTE: DEBUG
-			++recursionLevel;
 			// Double up the size and recursively sort the groups in an ascending order.
 			mergeInsert(first.expand(2), end.expand(2));
 
 			// Step 2: Create the main and pending chains
-			Container<Iterator>					main;
-			Container<PendingGroup<Iterator>>	pending;
+			Container<Iterator>	main;
+			Container<Iterator>	pending;
+
+			// Optimization for vectors
+			if constexpr ( has_reserve<T, Container> )
+			{
+				main.reserve(size);
+				pending.reserve((size + 1) / 2 - 1);
+			}
 
 			// Insert first follower and leader into the main chain
-			main.insert(main.end(), first);
-			main.insert(main.end(), std::next(first));
+			if constexpr ( has_push_back<T, Container> )
+			{
+				main.push_back(first);
+				main.push_back(std::next(first));
+			}
+			else
+			{
+				main.insert(main.end(), first);
+				main.insert(main.end(), std::next(first));
+			}
 
 			// Insert the remaining leaders into the main chain and followers into pending
 			for ( auto current = first + 2; std::distance(current, end) > 0; current += 2 )
 			{
-				auto upper = main.insert(main.end(), std::next(current));
-				pending.emplace(pending.end(), current, upper);
+				if constexpr ( has_push_back<T, Container> )
+				{
+					pending.emplace_back(current);
+					main.push_back(std::next(current));
+				}
+				else
+				{
+					pending.emplace(pending.end(), current);
+					main.insert(main.end(), std::next(current));
+				}
+			}
+
+			// Include leftover element in the pending chain
+			if ( is_odd )
+			{
+				if constexpr ( has_push_back<T, Container> )
+					pending.emplace_back(end);
+				else
+					pending.emplace(pending.end(), end);
 			}
 
 			// Step 3: Insertion
-			for ( size_type index = 0;; ++index )
+			size_type previousNumber	= jacobsthalGen(1);
+			size_type insertions		= 0;
+			auto lastSequenceEnd		= pending.begin();
+
+			// Jacobsthal sequence insertion
+			for ( size_type k = 2;; ++k )
 			{
-				size_type current = jacobsthal(index);
-				if ( current > pending.size() )
-					break ;
+				size_type currentNumber	= jacobsthalGen(k);
+				size_type difference	= currentNumber - previousNumber;
+				size_type leaderShift	= 0;
+				size_type remaining		= std::distance(lastSequenceEnd, pending.end());
 
-				// Insert 'current' ammount of elements into main
-				for ( ; current > 0; --current )
+				if ( difference > remaining )
+					break;
+
+				for ( size_type amount = difference; amount > 0; --amount )
 				{
-					auto element = std::next(pending.begin(), static_cast<difference_type>(current - 1));
+					auto follower		= std::next(lastSequenceEnd, static_cast<difference_type>(amount - 1));
+					auto upperBoundary	= std::next(main.begin(), static_cast<difference_type>(currentNumber + insertions - leaderShift));
 
-					// Insert into the main using binary search
-					auto pos = std::upper_bound(main.begin(), element->upperLimit, element->follower,
-						[this]( const auto& lhs, const auto& rhs )
-						{
+					auto insertionPoint = std::upper_bound(main.begin(), upperBoundary, *follower,
+						[this](const auto& lhs, const auto& rhs) {
 							if constexpr (COMPARISON_COUNTER)
 								++_comparisons;
 							return (lhs < rhs);
 						});
-					main.insert(pos, element->follower);
-					pending.erase(element);
+
+					auto insertionIt = main.insert(insertionPoint, *follower);
+
+					if ( std::distance(main.begin(), insertionIt) == static_cast<difference_type>(currentNumber + insertions) )
+						++leaderShift;
 				}
+				previousNumber	= currentNumber;
+				insertions		+= difference;
+				leaderShift		= 0;
+
+				std::advance(lastSequenceEnd, static_cast<difference_type>(difference));
 			}
 
-			// Insert elements which when weren't inserted with jacobsthal's ordering
-			while ( !pending.empty() )
+			// Insert remaining elements
+			size_type remaining = std::distance(lastSequenceEnd, pending.end());
+			for (difference_type i = static_cast<difference_type>(remaining) - 1; i >= 0; --i)
 			{
-				auto element = std::next(pending.begin(), static_cast<difference_type>(pending.size() - 1));
+				auto follower		= std::next(lastSequenceEnd, i);
+				auto upperBoundary	= std::next(main.begin(), static_cast<difference_type>(main.size() - remaining + static_cast<size_type>(i) + is_odd));
 
-				auto pos = std::upper_bound(main.begin(), element->upperLimit, element->follower,
-					[this]( const auto& lhs, const auto& rhs )
-					{
+				auto insertionPoint = std::upper_bound(main.begin(), upperBoundary, *follower,
+					[this](const auto& lhs, const auto& rhs) {
 						if constexpr (COMPARISON_COUNTER)
 							++_comparisons;
 						return (lhs < rhs);
 					});
-				main.insert(pos, element->follower);
-				pending.erase(element);
+
+				main.insert(insertionPoint, *follower);
 			}
 
-			// Iterator invalidation prevents the inclusion of leftovers into the pending chain
-			if ( is_odd )
-			{
-				auto pos = std::upper_bound(main.begin(), main.end(), end,
-					[this]( const auto& lhs, const auto& rhs )
-					{
-						if constexpr (COMPARISON_COUNTER)
-							++_comparisons;
-						return (lhs < rhs);
-					});
-				main.insert(pos, end);
-			}
-
-			//NOTE: DEBUG
-			std::cout << "Recursion level " << recursionLevel << " main: ";
-			for (auto group : main)
-			{
-				std::cout << "| ";
-				std::for_each(group.base(), group.end(),
-				[](const auto& ch)
-				{
-					std::cout << ch << " ";
-				});
-			}
-			std::cout << "\n";
+			pending.clear();
 
 			// Step 4: Update the sequence
 			Container<T> temp;
@@ -244,8 +273,6 @@ class PmergeMe
 				std::move(group.base(), group.end(), std::inserter(temp, temp.end()));
 			}
 			std::move(temp.begin(), temp.end(), first.base());
-			//NOTE: DEBUG
-			--recursionLevel;
 		}
 };
 
