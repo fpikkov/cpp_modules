@@ -26,6 +26,7 @@ int main( int argc, char** argv )
 	return (0);
 }
 
+[[maybe_unused]]
 static bool	vector_sort( const std::string& input )
 {
 	try
@@ -34,8 +35,7 @@ static bool	vector_sort( const std::string& input )
 
 		pm.printContainer("Before:");
 		pm.launch();
-		//pm.printContainer("After:");
-		pm.printContainer("After vector:");
+		pm.printContainer("After:");
 		pm.printTime("vector");
 	}
 	catch(const std::exception& e)
@@ -55,7 +55,7 @@ static bool	list_sort( const std::string& input )
 
 		pm.launch();
 		pm.printTime("list");
-		pm.printContainer("After list: ");
+		pm.printComparisons();
 	}
 	catch(const std::exception& e)
 	{

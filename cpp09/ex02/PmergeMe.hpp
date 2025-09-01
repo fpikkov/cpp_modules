@@ -74,17 +74,21 @@ class PmergeMe
 		void containerize( const std::string& values )
 		{
 			std::istringstream	sstream(values);
+			bool				parsed = false;
 			T					value;
 
-			while (sstream >> value)
+			while ( sstream >> value )
+			{
 				_sequence.insert(_sequence.end(), value);
-			if (!sstream.eof())
+				if ( !parsed )
+					parsed = true;
+			}
+			if ( !sstream.eof() || !parsed )
 				throw (std::runtime_error("Error: failed to parse integral values"));
 		}
 
 		// ---------------- Jacobsthal -----------------
-		static size_type	jacobsthalGen( size_type n )		{ return (n <= 1 ? n : (jacobsthalGen(n - 1) + (2 * jacobsthalGen(n - 2)))); }
-		static size_type	jacobsthal( size_type index )	{ return (jacobsthalGen(index + 3) - jacobsthalGen(index + 2)); }
+		static size_type	jacobsthal( size_type n )		{ return (n <= 1 ? n : (jacobsthal(n - 1) + (2 * jacobsthal(n - 2)))); }
 
 	public:
 		// ---------------- Rule of five ----------------
@@ -104,8 +108,11 @@ class PmergeMe
 		{
 			std::cout << "Time to process a range of " << _sequence.size()
 			<< " elements with std::" << containerType << " : " << _time << std::endl;
-			if constexpr (COMPARISON_COUNTER)
-				std::cout << "Comparisons: " << _comparisons << std::endl;
+		}
+
+		void	printComparisons( void ) const
+		{
+			std::cout << "Comparisons performed: " << _comparisons << std::endl;
 		}
 
 		void	printContainer( const std::string& prefix ) const
@@ -140,7 +147,7 @@ class PmergeMe
 		void	mergeInsert( Iterator first, Iterator last )
 		{
 			// Return if no more pairs can be formed
-			size_type size	= std::distance(first, last);
+			size_type size	= last - first;
 			if ( size < 2 )
 				return ;
 
@@ -149,7 +156,7 @@ class PmergeMe
 			Iterator end	= is_odd ? std::prev(last) : last;
 
 			// Step 1: Form groups then sort by the leading element
-			for ( auto current = first; std::distance(current, end) > 0; current += 2 )
+			for ( auto current = first; (end - current) > 0; current += 2 )
 			{
 				auto next = std::next(current);
 				if constexpr (COMPARISON_COUNTER)
@@ -184,7 +191,7 @@ class PmergeMe
 			}
 
 			// Insert the remaining leaders into the main chain and followers into pending
-			for ( auto current = first + 2; std::distance(current, end) > 0; current += 2 )
+			for ( auto current = first + 2; (end - current) > 0; current += 2 )
 			{
 				if constexpr ( has_push_back<T, Container> )
 				{
@@ -208,14 +215,14 @@ class PmergeMe
 			}
 
 			// Step 3: Insertion
-			size_type previousNumber	= jacobsthalGen(1);
+			size_type previousNumber	= jacobsthal(1);
 			size_type insertions		= 0;
 			auto lastSequenceEnd		= pending.begin();
 
 			// Jacobsthal sequence insertion
 			for ( size_type k = 2;; ++k )
 			{
-				size_type currentNumber	= jacobsthalGen(k);
+				size_type currentNumber	= jacobsthal(k);
 				size_type difference	= currentNumber - previousNumber;
 				size_type leaderShift	= 0;
 				size_type remaining		= std::distance(lastSequenceEnd, pending.end());
