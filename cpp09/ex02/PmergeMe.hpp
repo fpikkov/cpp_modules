@@ -10,9 +10,9 @@
 #include "GroupIterator.hpp"
 
 // Constants
-static constexpr bool	const	COMPARISON_COUNTER	= true;
-static constexpr bool	const	PRINT_LIMIT			= false;
-static constexpr size_t const	PRINT_MAX			= 5;
+static constexpr bool	COMPARISON_COUNTER	= true;
+static constexpr bool	PRINT_LIMIT			= false;
+static constexpr size_t PRINT_MAX			= 5;
 
 /**
  * @brief Concept which checks (at compile time) that the container passed to us
@@ -91,12 +91,12 @@ class PmergeMe
 		static size_type	jacobsthal( size_type n )		{ return (n <= 1 ? n : (jacobsthal(n - 1) + (2 * jacobsthal(n - 2)))); }
 
 	public:
-		// ---------------- Rule of five ----------------
+		// ---------------- Rule of five ---------------
 		PmergeMe() = delete;
 		PmergeMe( const std::string& sequence ) : _comparisons(0)	{ containerize(sequence); }
 		PmergeMe( const PmergeMe& ) = delete;
-		PmergeMe& operator=( const PmergeMe& ) = delete;
-		~PmergeMe() {}
+		PmergeMe&	operator=( const PmergeMe& ) = delete;
+		~PmergeMe() = default;
 
 		// ---------------- Getters ---------------------
 		const Container<T>&	getSequence()		const	{ return (_sequence); }
@@ -220,9 +220,9 @@ class PmergeMe
 			auto lastSequenceEnd		= pending.begin();
 
 			// Jacobsthal sequence insertion
-			for ( size_type k = 2;; ++k )
+			for ( size_type index = 2;; ++index )
 			{
-				size_type currentNumber	= jacobsthal(k);
+				size_type currentNumber	= jacobsthal(index);
 				size_type difference	= currentNumber - previousNumber;
 				size_type leaderShift	= 0;
 				size_type remaining		= std::distance(lastSequenceEnd, pending.end());
@@ -256,7 +256,7 @@ class PmergeMe
 
 			// Insert remaining elements
 			size_type remaining = std::distance(lastSequenceEnd, pending.end());
-			for (difference_type i = static_cast<difference_type>(remaining) - 1; i >= 0; --i)
+			for ( difference_type i = static_cast<difference_type>(remaining) - 1; i >= 0; --i )
 			{
 				auto follower		= std::next(lastSequenceEnd, i);
 				auto upperBoundary	= std::next(main.begin(), static_cast<difference_type>(main.size() - remaining + static_cast<size_type>(i) + is_odd));
