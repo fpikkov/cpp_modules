@@ -36,7 +36,8 @@ static bool	vector_sort( const std::string& input )
 		pm.printContainer("Before:");
 		pm.launch();
 		pm.printContainer("After:");
-		pm.printTime("vector");
+		pm.printInfo("vector");
+		pm.verify();
 	}
 	catch(const std::exception& e)
 	{
@@ -54,8 +55,8 @@ static bool	list_sort( const std::string& input )
 		PmergeMe<int, std::list> pm(input);
 
 		pm.launch();
-		pm.printTime("list");
-		pm.printComparisons();
+		pm.printInfo("list");
+		pm.verify();
 	}
 	catch(const std::exception& e)
 	{

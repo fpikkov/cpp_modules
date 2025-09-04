@@ -14,6 +14,11 @@ static constexpr bool	COMPARISON_COUNTER	= true;
 static constexpr bool	PRINT_LIMIT			= false;
 static constexpr size_t PRINT_MAX			= 5;
 
+// Color constants
+static constexpr const char* const	COLOR_GREEN	= "\033[1;32m";
+static constexpr const char* const	COLOR_CYAN	= "\033[1;36m";
+static constexpr const char* const	COLOR_CLEAR	= "\033[0m";
+
 /**
  * @brief Concept which checks (at compile time) that the container passed to us
  * can be used properly in the sorting algorithm.
@@ -99,32 +104,29 @@ class PmergeMe
 		~PmergeMe() = default;
 
 		// ---------------- Getters ---------------------
-		const Container<T>&	getSequence()		const	{ return (_sequence); }
-		const duration&		getTime()			const	{ return (_time); }
-		size_t				getComparisons()	const	{ return (_comparisons); }
+		const Container<T>&	getSequence		( void )	const	{ return (_sequence); }
+		const duration&		getTime			( void )	const	{ return (_time); }
+		size_t				getComparisons	( void )	const	{ return (_comparisons); }
 
 		// ---------------- Helpers ---------------------
-		void	printTime( const std::string& containerType ) const
+		void	printInfo( const std::string& containerType ) const
 		{
-			std::cout << "Time to process a range of " << _sequence.size()
-			<< " elements with std::" << containerType << " : " << _time << std::endl;
-		}
-
-		void	printComparisons( void ) const
-		{
-			std::cout << "Comparisons performed: " << _comparisons << std::endl;
+			std::cout << "Time to process a range of " << COLOR_GREEN << _sequence.size() << COLOR_CLEAR
+			<< " elements with std::" << containerType << " : " << COLOR_GREEN << _time << COLOR_CLEAR << std::endl;
+			if constexpr ( COMPARISON_COUNTER )
+				std::cout << "Comparisons with std::" << containerType << " : " << COLOR_GREEN << _comparisons << COLOR_CLEAR << std::endl;
 		}
 
 		void	printContainer( const std::string& prefix ) const
 		{
-			std::cout << prefix;
+			std::cout << COLOR_CYAN << prefix << COLOR_CLEAR;
 
 			auto it = _sequence.begin();
 			for (size_t idx = 0; idx < _sequence.size() && it != _sequence.end(); ++idx, ++it)
 			{
 				if (idx >= PRINT_MAX && PRINT_LIMIT)
 				{
-					std::cout << ' ' << "[...]";
+					std::cout << " ...";
 					break ;
 				}
 				std::cout << ' ' << (*it);
@@ -132,7 +134,29 @@ class PmergeMe
 			std::cout << std::endl;
 		}
 
-		void	launch()
+		void	verify( void ) const
+		{
+			bool isSorted = true;
+
+			auto it = _sequence.begin();
+			auto next = std::next(it);
+			auto ite = _sequence.end();
+
+			while ( it != ite && next != ite )
+			{
+				if ( *it > *next )
+				{
+					isSorted = false;
+					break ;
+				}
+				std::advance(it, 1);
+				next = std::next(it);
+			}
+
+			std::cout << "Sequence " << (isSorted == true ? "is sorted" : "is not sorted") << std::endl;
+		}
+
+		void	launch( void )
 		{
 			using Group = GroupIterator<typename Container<T>::iterator>;
 			const auto start = std::chrono::high_resolution_clock::now();

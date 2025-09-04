@@ -4,7 +4,7 @@ import subprocess
 import random
 
 # Generate a random sequence
-size = random.randint(10, 100)
+size = random.randint(3000, 5000)
 sequence = [random.randint(0, 10000) for _ in range(size)]
 sequence_str = ' '.join(map(str, sequence))
 
