@@ -13,6 +13,10 @@ class RPN
 		static auto	whichOperator( const char& ) -> int;
 		auto		stackTopPop() -> int;
 
+		auto		safeAddit( int lhs, int rhs ) const -> bool;
+		auto		safeSubtr( int lhs, int rhs ) const -> bool;
+		auto		safeMulti( int lhs, int rhs ) const -> bool;
+
 	public:
 		RPN();
 		RPN( const RPN& ) = delete;

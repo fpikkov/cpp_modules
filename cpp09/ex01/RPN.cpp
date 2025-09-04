@@ -3,6 +3,7 @@
 #include <array>
 #include <sstream>
 #include <stdexcept>
+#include <limits>
 
 RPN::RPN() {}
 RPN::~RPN() { this->clearStack(); }
@@ -46,19 +47,35 @@ auto	RPN::applyOperator( const int& type ) -> void
 	switch (type)
 	{
 		case 0:
+		{
+			if (!safeAddit(left, right))
+				throw (std::logic_error("Error: addition underflow or overflow"));
 			result = left + right;
 			break;
+		}
 		case 1:
+		{
+			if (!safeSubtr(left, right))
+				throw (std::logic_error("Error: subtraction underflow or overflow"));
 			result = left - right;
 			break;
+		}
 		case 2:
+		{
 			if (right == 0)
 				throw (std::logic_error("Error: division by zero"));
+			if (right == -1 && left == std::numeric_limits<int>::min())
+				throw (std::logic_error("Error: division overflow"));
 			result = left / right;
 			break;
+		}
 		case 3:
+		{
+			if (!safeMulti(left, right))
+				throw (std::logic_error("Error: multiplication underflow or overflow"));
 			result = left * right;
 			break;
+		}
 		default:
 			throw (std::runtime_error("Error"));
 	}
@@ -107,4 +124,22 @@ auto	RPN::launchRPN( const std::string& data ) -> int
 	if (!_stack.empty())
 		throw (std::runtime_error("Error"));
 	return (valInt);
+}
+
+auto	RPN::safeAddit( int lhs, int rhs ) const -> bool
+{
+	long long result = static_cast<long long>(lhs) + static_cast<long long>(rhs);
+	return ( result >= std::numeric_limits<int>::min() && result <= std::numeric_limits<int>::max() );
+}
+
+auto	RPN::safeSubtr( int lhs, int rhs ) const -> bool
+{
+	long long result = static_cast<long long>(lhs) - static_cast<long long>(rhs);
+	return ( result >= std::numeric_limits<int>::min() && result <= std::numeric_limits<int>::max() );
+}
+
+auto	RPN::safeMulti( int lhs, int rhs ) const -> bool
+{
+	long long result = static_cast<long long>(lhs) * static_cast<long long>(rhs);
+	return ( result >= std::numeric_limits<int>::min() && result <= std::numeric_limits<int>::max() );
 }
