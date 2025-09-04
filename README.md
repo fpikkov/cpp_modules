@@ -60,6 +60,11 @@ the class is initialized with invalid parameters.
 1. Create a class named Span which will store a given amount of integers. Implement functions for finding the shortest and longest spans between those integers. Additionally implement a member function which will accept multiple integers in a single call.
 2. Create a MutantStack class which will get it's identity from the stack adapter but is iterable like deque or vector.
 
+### CPP08
+0. Create a program which will calculate the value of held BTC on a given date. Market data is fetched from a 'data.csv' file, whereas holdings are parsed from input parameters given as a file.
+1. Program which performs basic arithmetic in Reverse Polish Notation (e.g. 2 5 +). Accepted values are in the range from 0 to 9.
+2. Implementation of the Ford-Johnson Merge Inseertion sorting algorithm. My implementation uses a grouped iterator class which tracks a range  of iterators from the underlying container throughout recursion  and provides easy swapping functionality. My solution goes against the subject's recommendation as it's fully templated and supports any sequential containers and integral types.
+
 ## LICENSE
 
 This repository is licensed under GNU GPL v3.0.
