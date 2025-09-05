@@ -4,18 +4,10 @@
 #include <chrono>
 #include <iostream>
 #include <string>
+#include <limits>
 
-/**
- * Basicaly return the iterator where the date would be next valid entry
- * All entries within the container will be constructed in a sorted ordder
- *
- *  .insert(std::find_if( []() { current_date < prev_date; ++it }, Entry _name));
- */
-
-#ifdef M_FILENAME
-# undef M_FILENAME
-#endif
-#define M_FILENAME "data.csv"
+static constexpr const char*	MARKET_DATA_FILENAME	= "data.csv";
+static constexpr float			MARKET_MAX_VALUE		= ( std::numeric_limits<float>::max() / 1000.0f );
 
 class BitcoinExchange
 {
@@ -35,12 +27,13 @@ class BitcoinExchange
 		std::string			_inputFilename;
 		const std::string	_marketFilename;
 
-		auto		parseEntry( const std::string& , const char& ) const -> Entry;
+		auto		parseEntry( const std::string& , const char&, bool ) const -> Entry;
 		auto		parseCSV( const std::string& ) -> bool;
+		auto		removeDuplicates( void ) -> void;
 		auto		calculatePrice( const std::string& ) -> void;
 		static auto	printEntry( const Entry&, const Entry& ) -> void;
 		static auto	printMissingMarketData( const Entry& ) -> void;
-		static auto	chronoToString( const std::chrono::year_month_day& date ) -> std::string;
+		static auto	chronoToString( const std::chrono::year_month_day& ) -> std::string;
 
 	public:
 		BitcoinExchange();

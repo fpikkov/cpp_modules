@@ -7,8 +7,8 @@
 #include <iomanip>
 
 // Canonical form
-BitcoinExchange::BitcoinExchange() : _marketFilename(M_FILENAME) { BitcoinExchange::parseCSV(_marketFilename); }
-BitcoinExchange::BitcoinExchange( const std::string& filename ) : _marketFilename(M_FILENAME)
+BitcoinExchange::BitcoinExchange() : _marketFilename(MARKET_DATA_FILENAME) { BitcoinExchange::parseCSV(_marketFilename); }
+BitcoinExchange::BitcoinExchange( const std::string& filename ) : _marketFilename(MARKET_DATA_FILENAME)
 {
 	if (BitcoinExchange::parseCSV(_marketFilename))
 		BitcoinExchange::calculatePrice(filename);
@@ -19,7 +19,7 @@ BitcoinExchange::~BitcoinExchange() { _dbMarket.clear(); }
 /**
  * @brief Will parse a string into a struct which contains a chrono date and value member.
  */
-auto	BitcoinExchange::parseEntry( const std::string& field , const char& midSep ) const -> Entry
+auto	BitcoinExchange::parseEntry( const std::string& field , const char& midSep, bool marketData ) const -> Entry
 {
 	Entry				entry;
 	std::istringstream	sstream(field);
@@ -34,7 +34,9 @@ auto	BitcoinExchange::parseEntry( const std::string& field , const char& midSep 
 		throw (BitcoinExchange::BadInputException("bad input"));
 	if (sep1 != '-' || sep2 != '-' || sep3 != midSep)
 		throw (BitcoinExchange::BadInputException("bad input"));
-	if (v > 1000.0f)
+	if (!marketData && v > 1000.0f)
+		throw (std::invalid_argument("too large a number"));
+	else if (marketData && v > MARKET_MAX_VALUE)
 		throw (std::invalid_argument("too large a number"));
 	else if (v < 0.0f)
 		throw (std::invalid_argument("not a positive number"));
@@ -61,6 +63,7 @@ auto	BitcoinExchange::parseCSV( const std::string& filename ) -> bool
 	Entry			entry;
 	std::ifstream	infileCSV(filename);
 	std::string		line;
+	bool			skipHeader = true;
 
 	if (!infileCSV)
 	{
@@ -68,40 +71,73 @@ auto	BitcoinExchange::parseCSV( const std::string& filename ) -> bool
 		return (false);
 	}
 
-	if (!std::getline(infileCSV, line))
-	{
-		std::cerr << "Error: parsing CSV file" << std::endl;
-		infileCSV.close();
-		return (false);
-	}
 	while (std::getline(infileCSV, line))
 	{
 		if (line.empty())
 			continue ;
 
+		if (skipHeader)
+		{
+			skipHeader = false;
+			if (line.find("date") != std::string::npos || line.find("exchange_rate") != std::string::npos)
+				continue ;
+		}
+
 		try
 		{
-			entry = parseEntry(line, ',');
-			auto it = std::find_if(
-				_dbMarket.begin(),
-				_dbMarket.end(),
-				[entry](const Entry& e){ return (entry._date > e._date); }
-			);
-			if (it != _dbMarket.begin() && std::prev(it)->_value == entry._value)
-				continue ;
-			_dbMarket.insert(it, entry);
+			entry = parseEntry(line, ',', true);
+			_dbMarket.push_back(entry);
 		}
 		catch(...) {}
 	}
 	infileCSV.close();
+
+	std::sort(
+		_dbMarket.begin(),
+		_dbMarket.end(),
+		[](const Entry& a, const Entry& b){ return (a._date < b._date); });
+
+	removeDuplicates();
+
 	return (true);
 }
 
+/**
+ * @brief Removes duplicate entries from the market data.
+ */
+auto	BitcoinExchange::removeDuplicates( void ) -> void
+{
+	if (_dbMarket.size() <= 1)
+		return ;
+
+	// Remove adjacent entry with the same date
+	auto last = std::unique(
+		_dbMarket.begin(),
+		_dbMarket.end(),
+		[](const Entry& a, const Entry& b){ return (a._date == b._date); });
+
+	if (last != _dbMarket.end())
+		_dbMarket.erase(last, _dbMarket.end());
+
+	// Remove adjacent entry where value does not change
+	last = std::unique(
+		_dbMarket.begin(),
+		_dbMarket.end(),
+		[](const Entry& a, const Entry& b){ return (a._value == b._value); });
+
+	if (last != _dbMarket.end())
+		_dbMarket.erase(last, _dbMarket.end());
+}
+
+/**
+ * @brief Calculates the price of held BTC based on market data on the given date.
+ */
 auto	BitcoinExchange::calculatePrice( const std::string& filename ) -> void
 {
 	Entry			entry;
 	std::ifstream	infileInput(filename);
 	std::string		line;
+	bool			skipHeader = true;
 
 	if (!infileInput)
 	{
@@ -114,27 +150,32 @@ auto	BitcoinExchange::calculatePrice( const std::string& filename ) -> void
 		return ;
 	}
 
-	if (!std::getline(infileInput, line))
-	{
-		std::cerr << "Error: parsing input file" << std::endl;
-		infileInput.close();
-		return ;
-	}
 	while (std::getline(infileInput, line))
 	{
 		if (line.empty())
 			continue ;
 
+		if (skipHeader)
+		{
+			skipHeader = false;
+			if (line.find("date") != std::string::npos || line.find("value") != std::string::npos)
+				continue ;
+		}
+
 		try
 		{
-			entry = parseEntry(line, '|');
-			auto it = std::find_if(
+			entry = parseEntry(line, '|', false);
+			auto it = std::upper_bound(
 				_dbMarket.begin(),
 				_dbMarket.end(),
-				[entry](const Entry& e){ return (entry._date >= e._date); }
+				entry,
+				[](const Entry& input, const Entry& market){ return (input._date < market._date); }
 			);
-			if (it != _dbMarket.end())
+			if (it != _dbMarket.begin())
+			{
+				--it;
 				printEntry(entry, (*it));
+			}
 			else
 				printMissingMarketData(entry);
 		}
@@ -148,6 +189,7 @@ auto	BitcoinExchange::printEntry( const Entry& input, const Entry& market ) -> v
 {
 	std::string	date = BitcoinExchange::chronoToString(input._date);
 	std::cout << date << " => " << input._value << " = " << (input._value * market._value) << std::endl;
+
 }
 
 auto	BitcoinExchange::printMissingMarketData( const Entry& entry ) -> void
